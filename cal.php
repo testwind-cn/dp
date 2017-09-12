@@ -183,7 +183,7 @@
         public function echoTable()
         {
             echo "<table border=1 cellspacing=0 cellpadding=0>\n";
-            for ($x=0; $x <= $this->d4_total_Period+1+5; $x++) {
+            for ($x=0; $x <= $this->d4_total_Period+1+9; $x++) {
                 echo "    <tr>\n";
                 if (isset($this->PeriodMounts[$x])) 
                 {
@@ -237,7 +237,6 @@
             }
             echo "</table>\n";
         }
-        
     }   
     class wjTestClass
     {
