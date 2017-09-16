@@ -139,11 +139,11 @@
         private $d2_real_rate = 0.18;
         private $d3_total_Period = 36;
         private $d4_period_days = 0;  // 0=按自然月还， 1-365=按天数周期还，-1=按后面的还款天表
+        private $d5_start_date;
         private $d6_period_amount = 0.0;
         private $d6_period_amount_round = 0;
-        private $start_date;
         private $period_days_array=null;
-        private $PeriodMounts = array();
+        private $periodAmounts = array();
         
         public function calPeriodAmount( $all_loan ,$real_rate, $total_Period, $period_days=0, $start_date=null, $period_days_array=null)
         {
@@ -167,43 +167,43 @@
                 $date=date_create(date("Y-m-d")); // "Y-m-d 2017-01-09 Y n j 2017-1-9" // date_date_set($date,2020,10,15);
             }
             
-            $this->start_date= date_create_from_format("Y-m-d H:i:s",date_format($date,"Y-m-d 00:00:00"));
+            $this->d5_start_date= date_create_from_format("Y-m-d H:i:s",date_format($date,"Y-m-d 00:00:00"));
             
-            unset($this->PeriodMounts);
-            $this->PeriodMounts =array();
+            unset($this->periodAmounts);
+            $this->periodAmounts =array();
             
-            $this->PeriodMounts[0] = new PeriodAmount();
-            $this->PeriodMounts[0]->setPeriodDate($this->start_date,0);
-            $this->PeriodMounts[0]->setPeriodPrincipal($this->d1_all_loan);
+            $this->periodAmounts[0] = new PeriodAmount();
+            $this->periodAmounts[0]->setPeriodDate($this->d5_start_date,0);
+            $this->periodAmounts[0]->setPeriodPrincipal($this->d1_all_loan);
             
             for ($x=1; $x <= $this->d3_total_Period; $x++) 
             {
-                $this->PeriodMounts[$x] = new PeriodAmount();
-                $this->PeriodMounts[$x]->setPeriodDate($this->start_date, $x, $this->d4_period_days, $this->period_days_array);       // 赋值借款日和本期还款日、本期期数
-                $this->PeriodMounts[$x]->fixDueDays($this->PeriodMounts[$x-1]->getPeriodDate()); // 修正本期天数
-                $this->PeriodMounts[$x]->fix_z_1_B($this->d2_real_rate);
+                $this->periodAmounts[$x] = new PeriodAmount();
+                $this->periodAmounts[$x]->setPeriodDate($this->d5_start_date, $x, $this->d4_period_days, $this->period_days_array);       // 赋值借款日和本期还款日、本期期数
+                $this->periodAmounts[$x]->fixDueDays($this->periodAmounts[$x-1]->getPeriodDate()); // 修正本期天数
+                $this->periodAmounts[$x]->fix_z_1_B($this->d2_real_rate);
             }
             
-            $this->PeriodMounts[$this->d3_total_Period+1] = new PeriodAmount(); // 多生成一个，data_due_z_1_B = 1；
+            $this->periodAmounts[$this->d3_total_Period+1] = new PeriodAmount(); // 多生成一个，data_due_z_1_B = 1；
             
             $sum_z_pai = 0; // 从 2 到 第 25 个 z_pai 求和
             
             for ($x=$this->d3_total_Period; $x >= 1; $x--) 
             {
-                $mult_pai = $this->PeriodMounts[$x+1]->get_z_pai();
-                $this->PeriodMounts[$x]->set_z_pai( $mult_pai );
+                $mult_pai = $this->periodAmounts[$x+1]->get_z_pai();
+                $this->periodAmounts[$x]->set_z_pai( $mult_pai );
                 $sum_z_pai = $sum_z_pai + $mult_pai; // 从 2 到 第 25 个 z_pai 求和
             }
             
-            $first_z_pai = $this->PeriodMounts[1]->get_z_pai(); //  第1 个 z_pai
+            $first_z_pai = $this->periodAmounts[1]->get_z_pai(); //  第1 个 z_pai
             $this->d6_period_amount = $this->d1_all_loan * $first_z_pai / $sum_z_pai; // 求精确月供
             $this->d6_period_amount_round = round( $this->d6_period_amount, 2, PHP_ROUND_HALF_UP ); // 求四舍五入到分月供
             
             for ($x=1; $x <= $this->d3_total_Period; $x++) {
-                $this->PeriodMounts[$x]->cal_principal_interest($this->PeriodMounts[$x-1]->getNextPeriodPrincipal(),$this->d2_real_rate,$this->d6_period_amount_round);
+                $this->periodAmounts[$x]->cal_principal_interest($this->periodAmounts[$x-1]->getNextPeriodPrincipal(),$this->d2_real_rate,$this->d6_period_amount_round);
             }
             
-            $this->PeriodMounts[$this->d3_total_Period]->cal_last_period_due_principal();
+            $this->periodAmounts[$this->d3_total_Period]->cal_last_period_due_principal();
 
         }
         
@@ -212,9 +212,9 @@
             echo "<table border=1 cellspacing=0 cellpadding=0>\n";
             for ($x=0; $x <= $this->d3_total_Period+1+9; $x++) {
                 echo "    <tr>\n";
-                if (isset($this->PeriodMounts[$x])) 
+                if (isset($this->periodAmounts[$x])) 
                 {
-                    $this->PeriodMounts[$x]->echoData();
+                    $this->periodAmounts[$x]->echoData();
                 }
                 else
                 {
@@ -244,27 +244,27 @@
             $this->d6_period_amount_round = round( $this->d6_period_amount, 2, PHP_ROUND_HALF_UP );
             
             $date=date_create(date("Y-m-d")); // "Y-m-d 2017-01-09 Y n j 2017-1-9" // date_date_set($date,2020,10,15);
-            $this->start_date= date_create_from_format("Y-m-d H:i:s",date_format($date,"Y-m-d 00:00:00"));
+            $this->d5_start_date= date_create_from_format("Y-m-d H:i:s",date_format($date,"Y-m-d 00:00:00"));
             
-            unset($this->PeriodMounts);
-            $this->PeriodMounts =array();
+            unset($this->periodAmounts);
+            $this->periodAmounts =array();
             
-            $this->PeriodMounts[0] = new PeriodAmount();
-            $this->PeriodMounts[0]->setPeriodDate($this->start_date,0);
-            $this->PeriodMounts[0]->setPeriodPrincipal($this->d1_all_loan);
+            $this->periodAmounts[0] = new PeriodAmount();
+            $this->periodAmounts[0]->setPeriodDate($this->d5_start_date,0);
+            $this->periodAmounts[0]->setPeriodPrincipal($this->d1_all_loan);
             
             for ($x=1; $x <= $this->d3_total_Period; $x++) {
-                $this->PeriodMounts[$x] = new PeriodAmount();
-                $this->PeriodMounts[$x]->setPeriodDate($this->start_date,$x);  // 赋值借款日和本期还款日、本期期数
-                $this->PeriodMounts[$x]->fixDueDays($this->PeriodMounts[$x-1]->getPeriodDate()); // 修正本期天数
-                $this->PeriodMounts[$x]->cal_principal_interest($this->PeriodMounts[$x-1]->getNextPeriodPrincipal(),$this->d2_real_rate,$this->d6_period_amount_round);
+                $this->periodAmounts[$x] = new PeriodAmount();
+                $this->periodAmounts[$x]->setPeriodDate($this->d5_start_date,$x);  // 赋值借款日和本期还款日、本期期数
+                $this->periodAmounts[$x]->fixDueDays($this->periodAmounts[$x-1]->getPeriodDate()); // 修正本期天数
+                $this->periodAmounts[$x]->cal_principal_interest($this->periodAmounts[$x-1]->getNextPeriodPrincipal(),$this->d2_real_rate,$this->d6_period_amount_round);
             }
             
             echo "<table border=1 cellspacing=0 cellpadding=0>\n";
             for ($x=1; $x <= $this->d3_total_Period; $x++) 
             {
                 echo "    <tr>\n";
-                $this->PeriodMounts[$x]->echoData();
+                $this->periodAmounts[$x]->echoData();
                 echo "    </tr>\n";
             }
             echo "</table>\n";
@@ -375,7 +375,7 @@
     $wjObj = new TotalScedule();
     $wjObj->calPeriodMount_old();
     
-   $wjObj->calPeriodAmount(2400,0.18,10,0);
+   $wjObj->calPeriodAmount(12000,0.18,24,0);
    $wjObj->echoTable();
    
    //   $wjObj = new wjTestClass();
