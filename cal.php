@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>Insert title here</title>
+<title>这是标题</title>
 <!-- last updated 2017-9-14 晚上更新 -->
 </head>
 

@@ -10,44 +10,7 @@ class wjTestClass
         }
     }
     
-    public function getPerMount()
-    {
-        $d1_all_loan = 12000;
-        $d2_real_rate = 0.18;
-        $d3_per_days = 30;
-        $d4_all_times = 6;
-        
-        $d5_pow = pow( 1 + $d2_real_rate * $d3_per_days / 360.0 , $d4_all_times );
-        
-        $d6_per_mount = $d1_all_loan * $d2_real_rate * $d3_per_days / 360.0 * $d5_pow / ($d5_pow - 1);
-        
-        $d_round = round( $d6_per_mount, 2, PHP_ROUND_HALF_UP );
-        echo $d5_pow;
-        echo "<br>";
-        echo $d6_per_mount."<br>";
-        echo number_format($d_round,4,'.',',')."<br>";
-        
-        $start_date=date_create(date("Y-m-d")); // "Y-m-d 2017-01-09 Y n j 2017-1-9" // date_date_set($date,2020,10,15);
-        
-        echo date_format($start_date,"Y/m/d")."<br>";
-        
-        $i1= date_format($start_date,"Y");
-        $i2= date_format($start_date,"n");
-        $i3= date_format($start_date,"j");
-        
-        
-        $date=date_create();
-        
-        for ($x=1; $x<12; $x++) {
-            date_date_set($date,$i1,$i2,$i3);    // date_date_set($date,2020,10,15);
-            echo "数字是：$x   ";
-            $i = new DateInterval("P".$x."M");
-            date_add($date,$i);
-            echo date_format($date,"Y/m/d")."<br>";
-        }
-        
-    }
-    
+
     private function checkSignature()
     {
         $signature = $_GET["signature"];
