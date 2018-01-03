@@ -120,21 +120,49 @@ class PeriodAmount
         $this->data_z_pai = $this->data_z_1_B * $mult_pai;
     }
     
-    public function echoData()
+    public function echoData( $need_table=false )
     {
-        //echo date_default_timezone_get();
-        $echoStr = "        <td>".$this->data_period_num."</td>\n";
-        $echoStr = $echoStr."        <td>".date_format($this->data_start_date,"Y/m/d")."</td>\n";
-        $echoStr = $echoStr."        <td>".date_format($this->data_period_date,"Y/m/d")."</td>\n";
-        $echoStr = $echoStr."        <td>".$this->data_period_principal."</td>\n";
-        $echoStr = $echoStr."        <td>".$this->data_due_days."</td>\n";
-        $echoStr = $echoStr."        <td>".$this->data_due_principal."</td>\n";
-        $echoStr = $echoStr."        <td>".$this->data_due_interest."</td>\n";
-        $echoStr = $echoStr."        <td>".$this->data_due_amount."</td>\n";
-        $echoStr = $echoStr."        <td>".$this->data_z_1_B."</td>\n";
-        $echoStr = $echoStr."        <td>".$this->data_z_pai."</td>\n";
-        $echoStr = $echoStr."\n";
-        return $echoStr;
+        
+
+        if ( $need_table ) {
+            //echo date_default_timezone_get();
+            $echoStr = "        <td>".$this->data_period_num."</td>\n";
+            $echoStr = $echoStr."        <td>".date_format($this->data_start_date,"Y-m-d")."</td>\n";
+            $echoStr = $echoStr."        <td>".date_format($this->data_period_date,"Y-m-d")."</td>\n";
+            $echoStr = $echoStr."        <td>".$this->data_period_principal."</td>\n";
+            $echoStr = $echoStr."        <td>".$this->data_due_days."</td>\n";
+            $echoStr = $echoStr."        <td>".$this->data_due_principal."</td>\n";
+            $echoStr = $echoStr."        <td>".$this->data_due_interest."</td>\n";
+            $echoStr = $echoStr."        <td>".$this->data_due_amount."</td>\n";
+            $echoStr = $echoStr."        <td>".$this->data_z_1_B."</td>\n";
+            $echoStr = $echoStr."        <td>".$this->data_z_pai."</td>\n";
+            $echoStr = $echoStr."\n";
+            return $echoStr;
+        }
+        else{
+            $arr = array(
+                'period_num'=> $this->data_period_num,
+                'start_date' => date_format($this->data_start_date,"Y-m-d"),
+                'period_date' => date_format($this->data_period_date,"Y-m-d"),
+                'period_principal' => $this->data_period_principal,
+                'due_days' => $this->data_due_days,
+                'due_principal' => $this->data_due_principal,
+                'due_interest' => $this->data_due_interest,
+                'due_amount' => $this->data_due_amount,
+                'z_1_B' => $this->data_z_1_B,
+                'z_pai' => $this->data_z_pai
+                );
+            
+            $arr_json = json_encode($arr);
+            
+            echo $arr_json."<br>\n";
+            
+            $obj = json_decode($arr_json);
+            echo $obj->{'start_date'}."<br>\n"; // 12345
+        }
     }
+    
+    
+    
 }
 ?>
