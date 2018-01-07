@@ -3,6 +3,7 @@ class TotalScedule
 {
     private $d1_all_loan = 12000;
     private $d2_real_rate = 0.18;
+    private $d2_real_day_rate = 0.0005;
     private $d3_total_Period = 36;
     private $d4_period_days = 0;  // 0=按自然月还， 1-365=按天数周期还，-1=按后面的还款天表
     private $d5_start_date;
@@ -19,6 +20,7 @@ class TotalScedule
         
         $this->d1_all_loan = $all_loan;
         $this->d2_real_rate = $real_rate;
+        $this->d2_real_day_rate = $this->d2_real_rate / 360.0;
         $this->d3_total_Period = $total_Period; // 不能小于1
         $this->d4_period_days = $period_days; // 0=按自然月还， 1-365=按天数周期还，-1=按后面的还款天表
         $this->period_days_array = $period_days_array;
@@ -47,7 +49,7 @@ class TotalScedule
             $this->periodAmounts[$x] = new PeriodAmount();
             $this->periodAmounts[$x]->setPeriodDate($this->d5_start_date, $x, $this->d4_period_days, $this->period_days_array);       // 赋值借款日和本期还款日、本期期数
             $this->periodAmounts[$x]->fixDueDays($this->periodAmounts[$x-1]->getPeriodDate()); // 修正本期天数
-            $this->periodAmounts[$x]->fix_z_1_B($this->d2_real_rate);
+            $this->periodAmounts[$x]->fix_z_1_B($this->d2_real_day_rate);
         }
         
         $this->periodAmounts[$this->d3_total_Period+1] = new PeriodAmount(); // 多生成一个，data_due_z_1_B = 1；
@@ -63,10 +65,12 @@ class TotalScedule
         
         $first_z_pai = $this->periodAmounts[1]->get_z_pai(); //  第1 个 z_pai
         $this->d6_period_amount = $this->d1_all_loan * $first_z_pai / $sum_z_pai; // 求精确月供
-        $this->d6_period_amount_round = round( $this->d6_period_amount, 2, PHP_ROUND_HALF_UP ); // 求四舍五入到分月供
+//        $this->d6_period_amount_round = round( $this->d6_period_amount, 2, PHP_ROUND_HALF_UP ); // 求四舍五入到分月供
+        $this->d6_period_amount_round = round( ceil($this->d6_period_amount *100) / 100, 2, PHP_ROUND_HALF_UP ); // 求向上取整到分月供
+        
         
         for ($x=1; $x <= $this->d3_total_Period; $x++) {
-            $this->periodAmounts[$x]->cal_principal_interest($this->periodAmounts[$x-1]->getNextPeriodPrincipal(),$this->d2_real_rate,$this->d6_period_amount_round);
+            $this->periodAmounts[$x]->cal_principal_interest($this->periodAmounts[$x-1]->getNextPeriodPrincipal(),$this->d2_real_day_rate,$this->d6_period_amount_round);
         }
         
         $this->periodAmounts[$this->d3_total_Period]->cal_last_period_due_principal();
@@ -75,20 +79,21 @@ class TotalScedule
     
     public function echoTable()
     {
-        echo "<table border=1 cellspacing=0 cellpadding=0>\n";
-        for ($x=0; $x <= $this->d3_total_Period+1+9; $x++) {
-            echo "    <tr>\n";
+        $echoStr = "<table border=1 cellspacing=0 cellpadding=0>\n";
+        for ($x=0; $x <= $this->d3_total_Period+1; $x++) {
+            $echoStr = $echoStr."    <tr>\n";
             if (isset($this->periodAmounts[$x]))
             {
-                $this->periodAmounts[$x]->echoData();
+                $echoStr = $echoStr.$this->periodAmounts[$x]->echoData();
             }
             else
             {
-                echo "    <td>no data</td>\n";
+                $echoStr = $echoStr."    <td>no data</td>\n";
             }
-            echo "    </tr>\n";
+            $echoStr = $echoStr."    </tr>\n";
         }
-        echo "</table>\n";
+        $echoStr = $echoStr."</table>\n";
+        return $echoStr;
     }
     
     
