@@ -1,4 +1,11 @@
 <?php
+
+class cal_data
+{
+    public $s_date="";
+    
+}
+
 class TotalScedule
 {
     private $d1_all_loan = 12000;
@@ -77,22 +84,40 @@ class TotalScedule
         
     }
     
-    public function echoTable()
+    public function echoTable( $need_table=false )
     {
-        $echoStr = "<table border=1 cellspacing=0 cellpadding=0>\n";
-        for ($x=0; $x <= $this->d3_total_Period+1; $x++) {
-            $echoStr = $echoStr."    <tr>\n";
-            if (isset($this->periodAmounts[$x]))
-            {
-                $echoStr = $echoStr.$this->periodAmounts[$x]->echoData();
+        if (  $need_table )
+        {
+            $echoStr = "<table border=1 cellspacing=0 cellpadding=0>\n";
+            for ($x=0; $x <= $this->d3_total_Period+1; $x++) {
+                $echoStr = $echoStr."    <tr>\n";
+                if (isset($this->periodAmounts[$x]))
+                {
+                    $echoStr = $echoStr.$this->periodAmounts[$x]->echoData(true);
+                }
+                else {
+                    $echoStr = $echoStr."    <td>no data</td>\n";
+                }
+                $echoStr = $echoStr."    </tr>\n";
             }
-            else
+            $echoStr = $echoStr."</table>\n";
+        } else {
+            $echoStr = "{";
+            for ($x=0; $x <= $this->d3_total_Period+1; $x++) 
             {
-                $echoStr = $echoStr."    <td>no data</td>\n";
+                if (isset($this->periodAmounts[$x]))
+                {
+                    $echoStr = $echoStr.$this->periodAmounts[$x]->echoData(false);
+                    $echoStr = $echoStr.",";
+                }
+                else {
+
+                }
             }
-            $echoStr = $echoStr."    </tr>\n";
+            
+            $echoStr = substr($echoStr,0,strlen($echoStr)-1 )."}";
+
         }
-        $echoStr = $echoStr."</table>\n";
         return $echoStr;
     }
     

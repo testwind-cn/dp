@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>这是标题</title>
 
-
+<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
 
 <script type="text/javascript">
 
@@ -80,7 +80,7 @@ function displayTab(){
 
 
 
-    <?php
+<?php
     
     $s_date = "2017-12-16";
     $s_date = "2018-1-5";
@@ -96,18 +96,26 @@ function displayTab(){
     require_once 'calValue/PeriodAmount.php';
     require_once 'calValue/TotalScedule.php';
     
+//    require_once 'calValue/getScedule.php';
+    require_once 'tools/check.php';
+    
+    
+
+    
     $wjObj = new TotalScedule();
 //    $wjObj->calPeriodMount_old();
     
 //   $wjObj->calPeriodAmount(10000,0.18,6,0);
 //    $wjObj->calPeriodAmount(10000,0.213,6,-1, "2017-12-16", $t_period_days_array);
     $wjObj->calPeriodAmount($amount,$rate,$total,$days, $s_date, $t_period_days_array);
-    echo $wjObj->echoTable();
-  
-   
+    $echoStr = $wjObj->echoTable(true);
+    $echoStr = urlencode ( $echoStr );
+    $echoStr = urldecode ( $echoStr );
+    echo $echoStr;
+
    //   $wjObj = new wjTestClass();
    //   $wjObj->getPerMount();
-	?>
+?>
     </body>
 
 </html>

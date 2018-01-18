@@ -122,8 +122,6 @@ class PeriodAmount
     
     public function echoData( $need_table=false )
     {
-        
-
         if ( $need_table ) {
             //echo date_default_timezone_get();
             $echoStr = "        <td>".$this->data_period_num."</td>\n";
@@ -137,7 +135,6 @@ class PeriodAmount
             $echoStr = $echoStr."        <td>".$this->data_z_1_B."</td>\n";
             $echoStr = $echoStr."        <td>".$this->data_z_pai."</td>\n";
             $echoStr = $echoStr."\n";
-            return $echoStr;
         }
         else{
             $arr = array(
@@ -155,11 +152,13 @@ class PeriodAmount
             
             $arr_json = json_encode($arr);
             
-            echo $arr_json."<br>\n";
+            $echoStr =  $arr_json; //."<br>\n";
             
-            $obj = json_decode($arr_json);
-            echo $obj->{'start_date'}."<br>\n"; // 12345
+            // $obj = json_decode($arr_json);
+            // $echoStr =  $obj->{'start_date'}."<br>\n"; // 12345
         }
+        
+        return $echoStr;
     }
     
     
