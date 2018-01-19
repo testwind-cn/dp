@@ -102,8 +102,8 @@ function displayTab() {
   </p>
 
     <input type="button"  id="getdata" value="提交"  onclick="displayTab()" />
-    <input type="hidden" name="req_type" value="1">
-    <input type="hidden" name="ret_type" value="1">
+    <input type="hidden" name="req_type" value="0">
+    <input type="hidden" name="ret_type" value="0">
     
 </form>
 

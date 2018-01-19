@@ -37,14 +37,25 @@ class Check_tools
         return $value;
     }
     
-    public static function getPOSTValue($name)
+    public static function getPOSTValue($name,$isPost=true)
     {
         $value = null;
-        if ( isset($_POST) && is_array($_POST) && count($_POST)>0)//先判断是否通过get传值了
+        if ( $isPost )
         {
-            if ( isset($_POST[$name]) )//是否存在"$name"的参数
+            if ( isset($_POST) && is_array($_POST) && count($_POST)>0)//先判断是否通过get传值了
             {
-                $value=$_POST[$name];//存在
+                if ( isset($_POST[$name]) )//是否存在"$name"的参数
+                {
+                    $value=$_POST[$name];//存在
+                }
+            }
+        } else {
+            if ( isset($_GET) && is_array($_GET) && count($_GET)>0)//先判断是否通过get传值了
+            {
+                if ( isset($_GET[$name]) )//是否存在"$name"的参数
+                {
+                    $value=$_GET[$name];//存在
+                }
             }
         }
         return $value;
