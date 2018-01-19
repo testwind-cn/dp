@@ -48,7 +48,7 @@ function displayTab() {
 </script>
 
 
-<!-- last updated 2017-9-14 晚上更新 -->
+<!-- last updated 2018-1-19 晚上更新 -->
 </head>
 
     <body>
@@ -67,7 +67,7 @@ function displayTab() {
     
     echo $qS."<br>";
     
-    
+     
     parse_str($qS);
     if ( ! isset($amount) )    {  $amount = 10000; }
     if ( ! isset($rate) )  {   $rate =0.213;}
