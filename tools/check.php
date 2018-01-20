@@ -37,9 +37,9 @@ class Check_tools
         return $value;
     }
     
-    public static function getPOSTValue($name,$isPost=true)
+    public static function getPOSTValue($name, $defValue, $isPost=true)
     {
-        $value = null;
+        $value = $defValue;
         if ( $isPost )
         {
             if ( isset($_POST) && is_array($_POST) && count($_POST)>0)//先判断是否通过get传值了

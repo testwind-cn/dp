@@ -53,10 +53,12 @@
     
     if ( $req_type == null || $req_type == 0  )
     {
-        $amount = floatval( Check_tools::getPOSTValue('amount',$isPOST) );
-        $rate = floatval( Check_tools::getPOSTValue('rate',$isPOST) );
-        $total = intval( Check_tools::getPOSTValue('total',$isPOST) );
-        $per_days = intval( Check_tools::getPOSTValue('per_days',$isPOST) );
+        $amount = floatval( Check_tools::getPOSTValue('amount', 0, $isPOST) );
+        $rate = floatval( Check_tools::getPOSTValue('rate', 0, $isPOST) );
+        $total = intval( Check_tools::getPOSTValue('total', 0, $isPOST) );
+        $per_days = intval( Check_tools::getPOSTValue('per_days', 0, $isPOST) );
+        $s_date = Check_tools::getPOSTValue('s_date', $the_today, $isPOST);
+        $days = Check_tools::getPOSTValue('_days', null, $isPOST);
         //            $days = Check_tools::getPOSTValue('days');
     } elseif ( $req_type == 1  ) {
 

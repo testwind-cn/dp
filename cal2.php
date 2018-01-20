@@ -8,15 +8,9 @@
 
 <script type="text/javascript">
 
-
-
-
 function displayTab2(){
-
 	var dt = document.getElementById('theTab');//通过id获取该div
 	dt.innerHTML = "abc";//把123替换成abc
-
-	
 }
 
 
@@ -43,26 +37,14 @@ function displayTab() {
         }
     });
 }
-
-
 </script>
 
 
 <!-- last updated 2018-1-19 晚上更新 -->
 </head>
-
-    <body>
-    这是PHP工具
-    <br>
-    <br>
-    
-   
-   
-
-<div id='theTab'>test！</div>
-
-
-    <?php
+<body>
+    这是还款计划表工具
+<?php
     $qS = $_SERVER['QUERY_STRING'];
     
     echo $qS."<br>";
@@ -71,80 +53,88 @@ function displayTab() {
     parse_str($qS);
     if ( ! isset($amount) )    {  $amount = 10000; }
     if ( ! isset($rate) )  {   $rate =0.213;}
-    if ( ! isset($total) )   {  $total = 120;}
+    if ( ! isset($total) )   {  $total = 12;}
     if ( ! isset($per_days) )  {   $per_days = 0;}
+    if ( ! isset($s_date) )  {   $s_date = "2018-1-5";}
+    if ( ! isset($days) )  {   $days = "31,28,31,30,31,30,31,31,30,31,30,31";}
     
-    echo "_".$amount;  // value
-    echo "_".$rate; // foo bar
-    echo "_".$total; // baz
-    echo "_".$per_days; // baz
+    echo $amount;  // value
+    echo ",&nbsp;&nbsp;".$rate; // foo bar
+    echo ",&nbsp;&nbsp;".$total; // baz
+    echo ",&nbsp;&nbsp;".$per_days."<br>\n"; // baz
+    echo $days; // baz
     
-    ?>
-
+?>
 <form id="form1" name="form1"  onsubmit="return false" action="##" method="post">
   <p>
     <label for="amount">总本金</label>
     <input name="amount" type="text" id="amount" value="<?php echo $amount; ?>" />
   </p>
+
   <p>
     <label for="rate">年利率</label>
     <input name="rate" type="text" id="rate" value="<?php echo $rate; ?>" />
   </p>
+  
+  
+  <p>
+    <label for="s_date">借款日期</label>
+    <input name="s_date" type="text" id="s_date" value="<?php echo $s_date; ?>"  />
+  </p>
+
   <p>
     <label for="total">期数</label>
     <input name="total" type="text" id="total" value="<?php echo $total; ?>"  />
   </p>
   
-  
-   <p>   
-     <label for="per_days">每期天数（0表示月还）</label>
+  <p>   
+    <label for="per_days">每期天数（0表示月还）</label>
     <input name="per_days" type="text" id="per_days" value="<?php echo $per_days; ?>"  />
   </p>
+  
+  <p>   
+    <label for="days">指定每期天数</label>
+    <input name="days" type="text" id="days" value="<?php echo $days; ?>"  />
+  </p>
 
-    <input type="button"  id="getdata" value="提交"  onclick="displayTab()" />
-    <input type="hidden" name="req_type" value="0">
-    <input type="hidden" name="ret_type" value="0">
+  <input type="button"  id="getdata" value="提交"  onclick="displayTab()" />
+  <input type="hidden" name="req_type" value="0">
+  <input type="hidden" name="ret_type" value="0">
     
 </form>
 
 
-
+<div id='theTab'>
 <?php
+
+    require_once 'calValue/PeriodAmount.php';
+    require_once 'calValue/TotalScedule.php';
+//    require_once 'calValue/getScedule.php';
+    require_once 'tools/check.php';
     
     $s_date = "2017-12-16";
     $s_date = "2018-1-5";
 
     $days = array(25,31,28,31,30,31);
-    
- //   $t_period_days_array = array(27,28,31,30,31,30,31,31,30,31,30,31,31);
+    //   $days = array(27,28,31,30,31,30,31,31,30,31,30,31,31);
     $days = array(55,31,30,31,30,31,31,30,31,30,31,31);
     
-//    for ($x=0; $x < count($t_period_days_array); $x++)
-//        echo $t_period_days_array[$x].'<br>';
-    
-    require_once 'calValue/PeriodAmount.php';
-    require_once 'calValue/TotalScedule.php';
-    
-//    require_once 'calValue/getScedule.php';
-    require_once 'tools/check.php';
-    
-    
-    
+    //    for ($x=0; $x < count($days); $x++)
+        //        echo $days[$x].'<br>';
+
     
     $wjObj = new TotalScedule();
-//    $wjObj->calPeriodMount_old();
     
 //   $wjObj->calPeriodAmount(10000,0.18,6,0);
 //    $wjObj->calPeriodAmount(10000,0.213,6,-1, "2017-12-16", $t_period_days_array);
     $wjObj->calPeriodAmount($amount,$rate,$total,$per_days, $s_date, $days);
     $echoStr = $wjObj->echoTable(true);
-    $echoStr = urlencode ( $echoStr );
-    $echoStr = urldecode ( $echoStr );
+    //$echoStr = urlencode ( $echoStr );
+    //$echoStr = urldecode ( $echoStr );
     echo $echoStr;
 
-   //   $wjObj = new wjTestClass();
-   //   $wjObj->getPerMount();
 ?>
+</div>
     </body>
 
 </html>
