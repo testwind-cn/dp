@@ -50,7 +50,7 @@ class PeriodAmount
         }
         $this->data_due_amount = $this->data_due_principal + $this->data_due_interest;
     }
-    
+     
     public function cal_last_period_due_principal()
     { // 修正最后一期应还本金，如果没还完本金，全部归还。
         if ( $this->data_due_principal < $this->data_period_principal )
