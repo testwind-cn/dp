@@ -51,12 +51,12 @@ function displayTab() {
     
      
     parse_str($qS);
-    if ( ! isset($amount) )    {  $amount = 10000; }
-    if ( ! isset($rate) )  {   $rate =0.213;}
+    if ( ! isset($amount) )    {  $amount = 80000; }
+    if ( ! isset($rate) )  {   $rate =0.59;}
     if ( ! isset($total) )   {  $total = 12;}
-    if ( ! isset($per_days) )  {   $per_days = 0;}
-    if ( ! isset($s_date) )  {   $s_date = "2018-1-5";}
-    if ( ! isset($days) )  {   $days = "31,28,31,30,31,30,31,31,30,31,30,31";}
+    if ( ! isset($per_days) )  {   $per_days = -1;}
+    if ( ! isset($s_date) )  {   $s_date = "2018-1-22";}
+    if ( ! isset($days) )  {   $days = "38,31,30,31,30,31,31,30,31,30,31,21";}
     
     echo $amount;  // value
     echo ",&nbsp;&nbsp;".$rate; // foo bar
@@ -113,11 +113,11 @@ function displayTab() {
     require_once 'tools/check.php';
     
     $s_date = "2017-12-16";
-    $s_date = "2018-1-5";
+    $s_date = "2018-1-22";
 
     $days = array(25,31,28,31,30,31);
     //   $days = array(27,28,31,30,31,30,31,31,30,31,30,31,31);
-    $days = array(55,31,30,31,30,31,31,30,31,30,31,31);
+    $days = array(38,31,30,31,30,31,31,30,31,30,31,21);
     
     //    for ($x=0; $x < count($days); $x++)
         //        echo $days[$x].'<br>';
