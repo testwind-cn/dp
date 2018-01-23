@@ -9,7 +9,7 @@ require_once 'calValue/getDates.php';
 
 $a = new GetDates();
 //$a->calPeriodDate(50,-1,"2018-7-31",null);
-$a->calPeriodDate(50,0,"2018-7-10",null);
+$a->calPeriodDate(50,0,"2018-7-11",null);
 
 echo $a->echoTable(true);
 

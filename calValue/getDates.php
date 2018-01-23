@@ -286,7 +286,7 @@ class GetDates
             $this->perDates[$x] = new PerDate();
             $this->perDates[$x]->setPeriodDate($this->d5_start_date,$last_date, $x, $this->d4_period_days, $this->period_days_array);       // 赋值借款日和本期还款日、本期期数
 //不需要了            $this->perDates[$x]->fixDueDays($this->periodAmounts[$x-1]->getPeriodDate()); // 修正本期天数
-//待定            $this->perDates[$x]->fix_z_1_B($this->d2_real_day_rate);
+            $this->perDates[$x]->fix_z_1_B($this->d2_real_day_rate);
         }
         
         /*待定        $this->perDates[$this->d3_total_Period+1] = new PeriodAmount(); // 多生成一个，data_due_z_1_B = 1；
