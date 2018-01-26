@@ -93,8 +93,8 @@ function displayTab(){
 //    for ($x=0; $x < count($t_period_days_array); $x++)
 //        echo $t_period_days_array[$x].'<br>';
     
-    require_once 'calValue/PeriodAmount.php';
-    require_once 'calValue/TotalScedule.php';
+    require_once 'calValue/PeriodAmount-20180125.php';
+    require_once 'calValue/TotalScedule-20180125.php';
     
 //    require_once 'calValue/getScedule.php';
     require_once 'tools/check.php';
@@ -102,7 +102,7 @@ function displayTab(){
     
 
     
-    $wjObj = new TotalScedule();
+    $wjObj = new TotalScedule-20180125();
 //    $wjObj->calPeriodMount_old();
     
 //   $wjObj->calPeriodAmount(10000,0.18,6,0);

@@ -42,6 +42,7 @@
     $the_today = date_format($the_date,"Y-m-d");
     $s_date = $the_today;
     $days = null;
+    $specday = 1;
     
     $wjObj = new TotalScedule();
     
@@ -58,7 +59,8 @@
         $total = intval( Check_tools::getPOSTValue('total', 0, $isPOST) );
         $per_days = intval( Check_tools::getPOSTValue('per_days', 0, $isPOST) );
         $s_date = Check_tools::getPOSTValue('s_date', $the_today, $isPOST);
-        $days = Check_tools::getPOSTValue('_days', null, $isPOST);
+        $days = Check_tools::getPOSTValue('days', null, $isPOST);
+        $specday = Check_tools::getPOSTValue('specday', 1, $isPOST);
         //            $days = Check_tools::getPOSTValue('days');
     } elseif ( $req_type == 1  ) {
 
@@ -73,13 +75,14 @@
         $per_days = Check_tools::getArrValue( $arr,'per_days',0);
         $s_date = Check_tools::getArrValue( $arr,'s_date',$the_today);
         $days = Check_tools::getArrValue( $arr,'days',null);
+        $specday = Check_tools::getArrValue( $arr,'specday',1);
         
     } else {
         
     }
 
     
-    $wjObj->calPeriodAmount($amount,$rate,$total,$per_days, $s_date, $days);
+    $wjObj->calPeriodAmount($amount,$rate,$total,$per_days, $s_date, $specday,true, $days);
     
     if ( $ret_type == null || $ret_type == 0  ) // 0 返回 table
     {

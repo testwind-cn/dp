@@ -5,15 +5,16 @@ echo $url."   ";
 //echo "$_SERVER[REQUEST_URL]";
 
 
-require_once 'calValue/getDates.php';
+require_once 'calValue/TotalScedule.php';
 
-$a = new GetDates();
+$a = new TotalScedule();
+
 //$a->calPeriodDate(50,-1,"2018-7-31",null);
-$a->calPeriodDate(50,0,"2018-7-11",null);
+$a->calPeriodAmount(90000,0.059,12,-1,"2018-1-23",1,true);
 
 echo $a->echoTable(true);
 
-
+/*
 $x = 1;
 
 $start_date = "2024-2-16";
@@ -42,5 +43,46 @@ for ($x=0; $x <= 50; $x++)
 
     echo "\n<br>".date_format($data_period_date,"Y-m-d 00:00:00")  ;
 }
+*/
+
+/*
+echo 13%12;
+
+
+echo ceil(3.333)."<br>"; //out 4
+echo floor(3.333)."<br>"; //out 3
+echo round(3.333)."<br>"; //out 3 
+
+echo ceil(3)."<br>"; //out 4
+echo floor(3)."<br>"; //out 3
+echo round(3)."<br>"."<br>"."<br>"."<br>"; //out 3 
+
+$m_month = 1;
+$shift = -37;
+$m_year = 2018;
+
+$add_year = floor( ( $m_month + $shift - 1 ) / 12 );
+$m_month = ( ( $m_month + $shift - 1 ) % 12 ) + 1;
+if ( $m_month <= 0 ) $m_month = $m_month + 12;
+$m_year = $m_year + $add_year;     
+
+
+echo $m_month;
+echo "<br>"."<br>"."<br>";
+echo $m_year;
+*/
+/*
+echo "<br>"."<br>"."<br>";
+
+for ($i= -30 ; $i<31; $i++){
+    $date=date_create_from_format("Y-m-d","2017-2-7");
+    $date1 = date_create_from_format("Y-m-d H:i:s",date_format($date,"Y-m-d 00:00:00"));
+    $date2 = $a->getShiftSameDay($date1,$i,false);
+    echo $i."___".date_format($date,"Y-m-d")."____".date_format($date2,"Y-m-d")."<br>";
+    
+    
+}
+
+*/
 
 ?>

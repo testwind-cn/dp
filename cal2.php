@@ -45,6 +45,24 @@ function displayTab() {
 <body>
     这是还款计划表工具
 <?php
+
+    require_once 'calValue/PeriodAmount.php';
+    require_once 'calValue/TotalScedule.php';
+//    require_once 'calValue/getScedule.php';
+    require_once 'tools/check.php';
+
+    $s_date = "2017-12-16";
+    $s_date = "2018-1-22";
+
+//    $days = array(25,31,28,31,30,31);
+//   $days = array(27,28,31,30,31,30,31,31,30,31,30,31,31);
+//    $days = array(38,31,30,31,30,31,31,30,31,30,31,21);
+
+//    for ($x=0; $x < count($days); $x++)
+//        echo $days[$x].'<br>';
+
+
+
     $qS = $_SERVER['QUERY_STRING'];
     
     echo $qS."<br>";
@@ -55,8 +73,10 @@ function displayTab() {
     if ( ! isset($rate) )  {   $rate =0.59;}
     if ( ! isset($total) )   {  $total = 12;}
     if ( ! isset($per_days) )  {   $per_days = -1;}
+    
     if ( ! isset($s_date) )  {   $s_date = "2018-1-22";}
     if ( ! isset($days) )  {   $days = "38,31,30,31,30,31,31,30,31,30,31,21";}
+    if ( ! isset($specday) )  {   $specday = 1;}
     
     echo $amount;  // value
     echo ",&nbsp;&nbsp;".$rate; // foo bar
@@ -88,13 +108,18 @@ function displayTab() {
   </p>
   
   <p>   
-    <label for="per_days">每期天数（0表示月还）</label>
+    <label for="per_days">每期天数（0表示半月还，负数是月）</label>
     <input name="per_days" type="text" id="per_days" value="<?php echo $per_days; ?>"  />
   </p>
   
   <p>   
     <label for="days">指定每期天数</label>
     <input name="days" type="text" id="days" value="<?php echo $days; ?>"  />
+  </p>
+  
+  <p>   
+    <label for="specday">指定还款日</label>
+    <input name="specday" type="text" id="specday" value="<?php echo $specday; ?>"  />
   </p>
 
   <input type="button"  id="getdata" value="提交"  onclick="displayTab()" />
@@ -107,27 +132,14 @@ function displayTab() {
 <div id='theTab'>
 <?php
 
-    require_once 'calValue/PeriodAmount.php';
-    require_once 'calValue/TotalScedule.php';
-//    require_once 'calValue/getScedule.php';
-    require_once 'tools/check.php';
-    
-    $s_date = "2017-12-16";
-    $s_date = "2018-1-22";
 
-    $days = array(25,31,28,31,30,31);
-    //   $days = array(27,28,31,30,31,30,31,31,30,31,30,31,31);
-    $days = array(38,31,30,31,30,31,31,30,31,30,31,21);
-    
-    //    for ($x=0; $x < count($days); $x++)
-        //        echo $days[$x].'<br>';
 
     
     $wjObj = new TotalScedule();
     
 //   $wjObj->calPeriodAmount(10000,0.18,6,0);
 //    $wjObj->calPeriodAmount(10000,0.213,6,-1, "2017-12-16", $t_period_days_array);
-    $wjObj->calPeriodAmount($amount,$rate,$total,$per_days, $s_date, $days);
+    $wjObj->calPeriodAmount($amount,$rate,$total,$per_days, $s_date, $specday,true,$days);
     $echoStr = $wjObj->echoTable(true);
     //$echoStr = urlencode ( $echoStr );
     //$echoStr = urldecode ( $echoStr );
