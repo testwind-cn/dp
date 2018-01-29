@@ -102,7 +102,7 @@ function displayTab(){
     
 
     
-    $wjObj = new TotalScedule-20180125();
+    $wjObj = new TotalScedule_20180125();
 //    $wjObj->calPeriodMount_old();
     
 //   $wjObj->calPeriodAmount(10000,0.18,6,0);

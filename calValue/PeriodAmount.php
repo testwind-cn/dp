@@ -7,12 +7,15 @@ class PeriodAmount
     //    private $data_start_date;// = date_create();        // 贷款首期借款日期
     private $data_last_date;// = date_create();         // 贷款上期还款日期
     private $data_period_date;// = date_create();       // 贷款本期还款日期
+    
     private $data_period_principal = 0;                 // 本期总欠本金
     private $data_due_days = 0;                         // 本期借款天数
     private $data_due_principal = 0;                    // 本期应还本金
     private $data_due_interest_real = 0.0;              // 本期应还利息_原始小数
     private $data_due_interest = 0.0;                   // 本期应还利息_取整
     private $data_due_amount = 0;                        // 本期应还本息
+    
+    
     private $data_z_1_B = 1;                            // 本期本息率 = 1 + 年率 /360* 本期天数
     private $data_z_pai = 1;                            // <本息率>连乘积
     
@@ -59,7 +62,7 @@ class PeriodAmount
         $this->data_due_amount = $this->data_due_principal + $this->data_due_interest;
     }
     
-    public function cal_period_dueday_interest($real_day_rate)
+    public function cal_interest_by_days($real_day_rate)
     { // 修正某期应还利息，按天。
         $new_interest = $this->data_period_principal * $this->data_due_days * $real_day_rate;  // 本期精确应还利息取整 ;之前是 / 360.0
         $new_interest_round = round( $new_interest, 2, PHP_ROUND_HALF_UP );     // 本期应还利息取整

@@ -111,7 +111,93 @@ class TotalScedule
     
     
 
-    
+    private function getFakeStartDate( $days_len, $spec_mday,$spec_mode ) {
+        
+        
+        if ( $days_len > 0 || $spec_mday == 0 ) { // 按日模式不修改，只改半月和月, 不指定日期的，也返回
+            $date=date_create_from_format("Y-m-d H:i:s", date_format($this->d5_start_date,"Y-m-d 00:00:00"));
+            $m_fake_start = $date;
+            return $m_fake_start;
+        }
+        
+        $theday1 = getdate( $this->d5_start_date->getTimestamp() );
+        $m_year = $theday1['year'];
+        $m_month = $theday1['mon'];
+        $m_day = $theday1['mday'];
+        
+        
+        
+        //////////////// 2.修正指定日期
+        if ( $spec_mday < 0 ) {
+            $spec_mday = $m_day;
+        }
+        if ( $spec_mday > 28 ) $spec_mday = 28; // spec_mode 按实际传入的
+        
+        
+        if (  $days_len == 0 ) { ///半月模式
+            if ( $spec_mday !=0 ) { //注意半月不指定日期模式！！！ 不是0任意天模式，
+                if ( $spec_mday == 15 ) $spec_mday = 16;
+                if ( $spec_mday == 14 ) $spec_mday = 13;
+            }
+            
+            if ( $m_day + 15 <= $spec_mday ) $spec_mday -= 15; //** 半月模式的，借款日的mday + 15 <=指定日mday， 指定日mday-=15
+            if ( $spec_mday + 15 <= $m_day ) $spec_mday += 15; //** 半月模式的，指定日mday + 15 <= 借款日的mday， 指定日mday+=15
+            
+        }
+        
+        
+        if ( $spec_mday > 0 ) {
+            if ( $m_day <= $spec_mday ) {
+                
+                $date=date_create_from_format("Y-m-d H:i:s", date_format($this->d5_start_date,"Y-m-d 00:00:00"));
+                $date->setDate ( $m_year , $m_month , $spec_mday );
+                $m_fake_start = $date; 
+                
+                $m_diff = (int) date_diff( $m_fake_start ,$this->d5_start_date)->format("%a");
+                
+                if ( $spec_mode == false ) {
+                    
+                    $m_fake_start = $date;//$this->getShiftSameDay($date);         // 不用
+                } else {
+                    if ( $m_diff >15 || ($m_diff > 7 & $days_len==0)  ) {
+                        $m_fake_start = $this->getShiftSameDay($date,-1,$days_len!=0);
+                    } else { // 指定日mday - 借款日的mday <= 15
+                        // 月：用指定日生成本月  --做假借款日
+                        // 半月：用指定日生成本期  --做假借款日
+                        $m_fake_start = $date; // 不用
+                    }
+                    
+                }
+                
+                
+            }else { //指定日mday<借款日的mday
+                
+                $date=date_create_from_format("Y-m-d H:i:s", date_format($this->d5_start_date,"Y-m-d 00:00:00"));
+                $date->setDate ( $m_year , $m_month , $spec_mday );
+                $m_fake_start = $this->getShiftSameDay($date,1,$days_len!=0);
+                
+                $m_diff = (int) date_diff( $m_fake_start ,$this->d5_start_date)->format("%a");
+                
+                if ( $spec_mode == false ) {
+                    $m_fake_start = $this->getShiftSameDay($date,1,$days_len!=0); // 不用
+                } else {
+                    if ( $m_diff >15 || ($m_diff > 7 & $days_len==0)  ) {
+                        $m_fake_start = $date;
+                    } else {
+                        $m_fake_start = $this->getShiftSameDay($date,1,$days_len!=0); // 不用
+                    }
+                    
+                }
+                
+            }
+            
+        } else { // 任意天的，支持 29,30,31的
+//            $m_fake_start = date_create_from_format("Y-m-d H:i:s", date_format($this->d5_start_date,"Y-m-d 00:00:00"));
+        }
+        
+        return $m_fake_start;
+
+    }
   
     public function calPeriodAmount( $all_loan ,$real_rate,  $total_Period, $days_len=-1, $start_date=null, $spec_mday=0, $spec_mode=false,$days_array=null)
     {
@@ -189,83 +275,9 @@ class TotalScedule
         //////////////// 1.设定开始日期
         
         
+        $m_fake_start = $this->getFakeStartDate($days_len,$spec_mday,$spec_mode);
         
         
-        
-        $theday1 = getdate( $this->d5_start_date->getTimestamp() );
-        $m_year = $theday1['year'];
-        $m_month = $theday1['mon'];
-        $m_day = $theday1['mday'];
-        
-        
-        
-        //////////////// 2.修正指定日期
-        if ( $spec_mday < 0 ) {
-            $spec_mday = $m_day;
-        }
-        if ( $spec_mday > 28 ) $spec_mday = 28; // spec_mode 按实际传入的
-        
-        
-        if (  $days_len == 0 ) { ///半月模式 
-            if ( $spec_mday !=0 ) { //注意半月不指定日期模式！！！ 不是0任意天模式，
-                if ( $spec_mday == 15 ) $spec_mday = 16;
-                if ( $spec_mday == 14 ) $spec_mday = 13;
-            }
-            
-            if ( $m_day + 15 <= $spec_mday ) $spec_mday -= 15; //** 半月模式的，借款日的mday + 15 <=指定日mday， 指定日mday-=15
-            if ( $spec_mday + 15 <= $m_day ) $spec_mday += 15; //** 半月模式的，指定日mday + 15 <= 借款日的mday， 指定日mday+=15
-            
-        }
-        
-        
-        if ( $spec_mday > 0 ) {
-            if ( $m_day <= $spec_mday ) {
-                
-                $date=date_create_from_format("Y-m-d H:i:s", date_format($this->d5_start_date,"Y-m-d 00:00:00"));
-                $date->setDate ( $m_year , $m_month , $spec_mday );
-                $m_fake_start = $date;
-                
-                $m_diff = (int) date_diff( $m_fake_start ,$this->d5_start_date)->format("%a");
-                
-                if ( $spec_mode == false ) {
-                    
-                    $m_fake_start = $date;//$this->getShiftSameDay($date);         // 不用
-                } else {
-                    if ( $m_diff >15 || ($m_diff > 7 & $days_len==0)  ) {
-                        $m_fake_start = $this->getShiftSameDay($date,-1,$days_len!=0);
-                    } else { // 指定日mday - 借款日的mday <= 15
-                        // 月：用指定日生成本月  --做假借款日
-                        // 半月：用指定日生成本期  --做假借款日
-                        $m_fake_start = $date; // 不用
-                    }
-                    
-                }
-                
-                
-            }else { //指定日mday<借款日的mday
-                
-                $date=date_create_from_format("Y-m-d H:i:s", date_format($this->d5_start_date,"Y-m-d 00:00:00"));
-                $date->setDate ( $m_year , $m_month , $spec_mday );
-                $m_fake_start = $this->getShiftSameDay($date,1,$days_len!=0);
-                
-                $m_diff = (int) date_diff( $m_fake_start ,$this->d5_start_date)->format("%a");
-                
-                if ( $spec_mode == false ) {
-                    $m_fake_start = $this->getShiftSameDay($date,1,$days_len!=0); // 不用
-                } else {
-                    if ( $m_diff >15 || ($m_diff > 7 & $days_len==0)  ) {
-                        $m_fake_start = $date;
-                    } else {
-                        $m_fake_start = $this->getShiftSameDay($date,1,$days_len!=0); // 不用
-                    }
-                    
-                }
-                
-            }
-            
-        } else { // 任意天的，支持 29,30,31的
-            $m_fake_start = date_create_from_format("Y-m-d H:i:s", date_format($this->d5_start_date,"Y-m-d 00:00:00"));
-        }
         
         
           
