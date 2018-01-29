@@ -8,7 +8,7 @@ echo $url."   ";
 require_once 'calValue/GetDates.php';
 
 $aaaa = new TheDates(12);
-$aaaa->calScheduleDate( 12, -1, "2018-1-23", 6, true,null);
+$aaaa->calScheduleDate( 16, -1, "2018-1-29", 0, true,null);
 $aaaa->echoData();
 
 
@@ -17,7 +17,7 @@ require_once 'calValue/TotalScedule.php';
 $a = new TotalScedule();
 
 //$a->calPeriodDate(50,-1,"2018-7-31",null);
-$a->calPeriodAmount(90000,0.059,12,-1,"2018-1-23",6,true);
+$a->calPeriodAmount(90000,0.059,16,-1,"2018-1-29",0,true);
 
 
 echo $a->echoTable(true);

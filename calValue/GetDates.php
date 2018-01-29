@@ -5,13 +5,15 @@ class TheDates
 {
 
     private $d3_total_Period = 0;
+    private $d4_period_days;
+    private $d5_start_date;
+    
     //    private $data_start_date;// = date_create();        // 贷款首期借款日期
     private $data_last_date;// = date_create();         // 贷款上期还款日期
     private $data_period_date;// = date_create();       // 贷款本期还款日期
     private $data_due_days;                         // 本期借款天数
     private $period_days_array=null;
-    private $d4_period_days;
-    private $d5_start_date;
+
     
     
     public function __construct($num)
@@ -22,9 +24,9 @@ class TheDates
         $this->data_last_date = array();
         $this->data_due_days = array();
         
-        $this->data_period_num = $num;
+        $this->d3_total_Period = $num;
         
-        for ($i=0 ;$i<=$this->data_period_num+1;$i++){
+        for ($i=0 ; $i<=$this->d3_total_Period+1;$i++){
             $this->data_period_date[$i] = date_create();
             $this->data_last_date[$i] =  date_create();
             $this->data_due_days[$i] =  0;
@@ -37,7 +39,7 @@ class TheDates
     public function __destruct() {
         echo 'Destroying: ';
         //, $this->name, PHP_EOL;
-        for ($i = $this->data_period_num + 1; $i >= 0; $i --) {
+        for ($i = $this->d3_total_Period + 1; $i >= 0; $i --) {
             if (is_array($this->data_last_date) && isset($this->data_last_date[$i]))
                 unset($this->data_last_date[$i]);
             if (is_array($this->data_period_date) && isset($this->data_period_date[$i]))
@@ -45,8 +47,8 @@ class TheDates
             if (is_array($this->data_due_days) && isset($this->data_due_days[$i]))
                 unset($this->data_due_days[$i]);
         }
-        $data_last_date = null;
-        $data_period_date = null;
+        $this->data_last_date = null;
+        $this->data_period_date = null;
         $this->data_due_days = null;
     }
    
@@ -88,7 +90,7 @@ class TheDates
     public function getShiftSameDay( $start_date, $shift=0, $is_month=true) // shift 前后挪期， $is_month=false半月，true月
     {
         
-        // ?? 检查 $start_date 是合法日期
+        // ?? 检查 $start_date 是合法日期 !!!!!
         
         $theday1 = getdate( $start_date->getTimestamp() );
         $m_year = $theday1['year'];
@@ -128,16 +130,20 @@ class TheDates
     
     
     
-    private function getFakeStartDate( $days_len, $spec_mday,$spec_mode ) {
+    private function getFakeStartDate( $start_date, $days_len, $spec_mday,$spec_mode ) {
         
+        // ?? 检查 $start_date 是合法日期 !!!!!
+        
+        
+        $date=date_create_from_format("Y-m-d H:i:s", date_format( $start_date, "Y-m-d 00:00:00"));
         
         if ( $days_len > 0 || $spec_mday == 0 ) { // 按日模式不修改，只改半月和月, 不指定日期的，也返回
-            $date=date_create_from_format("Y-m-d H:i:s", date_format($this->d5_start_date,"Y-m-d 00:00:00"));
+            
             $m_fake_start = $date;
             return $m_fake_start;
         }
         
-        $theday1 = getdate( $this->d5_start_date->getTimestamp() );
+        $theday1 = getdate( $date->getTimestamp() );
         $m_year = $theday1['year'];
         $m_month = $theday1['mon'];
         $m_day = $theday1['mday'];
@@ -166,11 +172,11 @@ class TheDates
         if ( $spec_mday > 0 ) {
             if ( $m_day <= $spec_mday ) {
                 
-                $date=date_create_from_format("Y-m-d H:i:s", date_format($this->d5_start_date,"Y-m-d 00:00:00"));
+                $date=date_create_from_format("Y-m-d H:i:s", date_format($start_date,"Y-m-d 00:00:00"));
                 $date->setDate ( $m_year , $m_month , $spec_mday );
                 $m_fake_start = $date;
                 
-                $m_diff = (int) date_diff( $m_fake_start ,$this->d5_start_date)->format("%a");
+                $m_diff = (int) date_diff( $m_fake_start ,$start_date)->format("%a");
                 
                 if ( $spec_mode == false ) {
                     
@@ -189,11 +195,11 @@ class TheDates
                 
             }else { //指定日mday<借款日的mday
                 
-                $date=date_create_from_format("Y-m-d H:i:s", date_format($this->d5_start_date,"Y-m-d 00:00:00"));
+                $date=date_create_from_format("Y-m-d H:i:s", date_format($start_date,"Y-m-d 00:00:00"));
                 $date->setDate ( $m_year , $m_month , $spec_mday );
                 $m_fake_start = $this->getShiftSameDay($date,1,$days_len!=0);
                 
-                $m_diff = (int) date_diff( $m_fake_start ,$this->d5_start_date)->format("%a");
+                $m_diff = (int) date_diff( $m_fake_start ,$start_date)->format("%a");
                 
                 if ( $spec_mode == false ) {
                     $m_fake_start = $this->getShiftSameDay($date,1,$days_len!=0); // 不用
@@ -239,16 +245,12 @@ class TheDates
         //////////////// 1.设定开始日期
         
         
-        $m_fake_start = $this->getFakeStartDate($days_len,$spec_mday,$spec_mode);
+        $m_fake_start = $this->getFakeStartDate($this->d5_start_date,$days_len,$spec_mday,$spec_mode);
         
         
         
         
         
-        
-        
-        
-        $this->period_days_array = $days_array;
         
 //        unset($this->periodAmounts);
 //        $this->periodAmounts =array();
@@ -456,7 +458,7 @@ class TheDates
                 $echoStr = $echoStr."    <tr>\n";
                 
                 
-                $echoStr = $echoStr."        <td>".$this->data_period_num."</td>\n";
+                $echoStr = $echoStr."        <td>".$x."</td>\n";
                 //            $echoStr = $echoStr."        <td>".date_format($this->data_start_date,"Y-m-d")."</td>\n";
                 $echoStr = $echoStr."        <td>".date_format($this->data_last_date[$x],"Y-m-d")."</td>\n";
                 $echoStr = $echoStr."        <td>".date_format($this->data_period_date[$x],"Y-m-d")."</td>\n";
