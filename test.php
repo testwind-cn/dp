@@ -5,12 +5,20 @@ echo $url."   ";
 //echo "$_SERVER[REQUEST_URL]";
 
 
+require_once 'calValue/GetDates.php';
+
+$aaaa = new TheDates(12);
+$aaaa->calScheduleDate( 12, -1, "2018-1-23", 6, true,null);
+$aaaa->echoData();
+
+
 require_once 'calValue/TotalScedule.php';
 
 $a = new TotalScedule();
 
 //$a->calPeriodDate(50,-1,"2018-7-31",null);
-$a->calPeriodAmount(90000,0.059,12,-1,"2018-1-23",1,true);
+$a->calPeriodAmount(90000,0.059,12,-1,"2018-1-23",6,true);
+
 
 echo $a->echoTable(true);
 

@@ -331,8 +331,8 @@ class TotalScedule
         }
                 
         $this->periodAmounts[$this->d3_total_Period]->cal_last_period_due_principal();
-        $this->periodAmounts[1]->cal_period_dueday_interest($this->d2_real_day_rate);
-        $this->periodAmounts[$this->d3_total_Period]->cal_period_dueday_interest($this->d2_real_day_rate);
+        $this->periodAmounts[1]->cal_interest_by_days($this->d2_real_day_rate);
+        $this->periodAmounts[$this->d3_total_Period]->cal_interest_by_days($this->d2_real_day_rate);
         
     }
     
