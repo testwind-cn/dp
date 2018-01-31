@@ -5,7 +5,7 @@ class TheDates
 {
 
     private $d3_total_Period = 0;
-    private $d4_period_days;
+    private $d4_period_len;
     private $d5_start_date;
     
     //    private $data_start_date;// = date_create();        // 贷款首期借款日期
@@ -75,7 +75,7 @@ class TheDates
         return null;
     }
     
-    public function getDueDate($num)
+    public function getDueDays($num)
     { // 获取上期还款日的一个副本
         if ($num < 0 || $num > $this->d3_total_Period + 1)
             return 0;
@@ -83,6 +83,16 @@ class TheDates
             return $this->data_due_days[$num];
         }
         return 0;
+    }
+    
+    public function getTotal()
+    { // ???
+        return $this->d3_total_Period;
+    }
+    
+    public function getPeriod_Len()
+    { // ???
+        return $this->d4_period_len;
     }
     
     
@@ -226,9 +236,19 @@ class TheDates
     public function calScheduleDate( $total_Period, $days_len=-1, $start_date=null, $spec_mday=0, $spec_mode=false,$days_array=null)
     {
         
+        $num = $this->getTotal();
+        if ( $total_Period <=0 ) return;
+        if ( $total_Period != $num  ) {
+            $this->__destruct();
+            $this->__construct($total_Period);
+        }
+        
+        
         $this->d3_total_Period = $total_Period; // 总期数不能小于1
-        $this->d4_period_days = $days_len; // -1=按自然月还， 1-365=按天数周期还，-25=按后面的还款天表
+        $this->d4_period_len = $days_len; // -1=按自然月还， 1-365=按天数周期还，-25=按后面的还款天表
         $this->period_days_array = $days_array;
+        
+        
         
         
         
@@ -256,19 +276,19 @@ class TheDates
 //        $this->periodAmounts =array();
 //        $this->periodAmounts[0] = new PeriodAmount();
         
-        $this->setPeriodDate($this->d5_start_date,$this->d5_start_date,0,$this->d4_period_days,$this->period_days_array);
+        $this->setPeriodDate($this->d5_start_date,$this->d5_start_date,0,$this->d4_period_len,$this->period_days_array);
 //        $this->setPeriodPrincipal($this->d1_all_loan);
         
         for ($x=1; $x <= $this->d3_total_Period; $x++)
         {
             $last_date = $this->getThisDate($x-1);
 //            $this->periodAmounts[$x] = new PeriodAmount();
-            $this->setPeriodDate($m_fake_start,$last_date,$x, $this->d4_period_days, $this->period_days_array);       // 赋值借款日和本期还款日、本期期数
+            $this->setPeriodDate($m_fake_start,$last_date,$x, $this->d4_period_len, $this->period_days_array);       // 赋值借款日和本期还款日、本期期数
             //不需要了            $this->perDates[$x]->fixDueDays($this->periodAmounts[$x-1]->getPeriodDate()); // 修正本期天数
-//需要再实现            $this->periodAmounts[$x]->fix_z_1_B($this->d2_real_day_rate,$this->d4_period_days,false); // $this->d2_real_day_rate, false 按期，true 按天
+//需要再实现            $this->periodAmounts[$x]->fix_z_1_B($this->d2_real_day_rate,$this->d4_period_len,false); // $this->d2_real_day_rate, false 按期，true 按天
         }
         
-        $this->setPeriodDate($this->d5_start_date,$last_date,$this->d3_total_Period,$this->d4_period_days,  $this->period_days_array); // 修正末期
+        $this->setPeriodDate($this->d5_start_date,$last_date,$this->d3_total_Period,$this->d4_period_len,  $this->period_days_array); // 修正末期
         
 //        $this->periodAmounts[$this->d3_total_Period+1] = new PeriodAmount(); // 多生成一个，data_due_z_1_B = 1；
         

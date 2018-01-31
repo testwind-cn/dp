@@ -4,13 +4,23 @@ $url = "$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 echo $url."   ";
 //echo "$_SERVER[REQUEST_URL]";
 
+//require_once 'calValue/GetRates.php';
+require_once 'calValue/GetTotal.php';
 
-require_once 'calValue/GetDates.php';
+/*
+$aa1 = new TheDates(12);
+$aa1->calScheduleDate( 16, -1, "2018-1-29", 0, true,null);
+$aa1->echoData();
+$aa2 = new TheRates(12);
+$aa2->cal_z_pai($aa1,0.059);
+$aa2->echoData();
+*/
 
-$aaaa = new TheDates(12);
-$aaaa->calScheduleDate( 16, -1, "2018-1-29", 0, true,null);
-$aaaa->echoData();
+$aa = new TotalS();
+$aa->aaa(90000,0.059,16,-1,"2018-1-29",0,true);
 
+
+// $a->calPeriodAmount(90000,0.059,16,-1,"2018-1-29",0,true);
 
 require_once 'calValue/TotalScedule.php';
 
