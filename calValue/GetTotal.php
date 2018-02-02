@@ -5,7 +5,7 @@ require_once 'calValue/GetDates.php';
 require_once 'calValue/GetAmount.php';
 
 
-class TotalS
+class TheTotals
 {
     // 1-1098按设置固定天（ 多期、一期），
     // 0按半月，-1按月，-2双月，-3三月，-4四月，-5五月，-6六月、-7七月、-8八月、-9九月、-10十月、-11十月、-12一年、（ 多期、一期）
@@ -40,23 +40,23 @@ class TotalS
     }
     
     
-    public function aaa($all_loan,$rate,$total,$len, $sdate, $fixD,$mode){
+    public function cal_theTotals($all_loan,$rate,$total,$len, $sdate, $fixD,$mode){
 
         
 //        $a->calPeriodAmount(90000,0.059,16,-1,"2018-1-29",0,true);
         
         $theDates = new TheDates($total);
-        $theDates->calScheduleDate( $total, $len, $sdate , $fixD , $mode,null);
+        $theDates->cal_theDates( $total, $len, $sdate , $fixD , $mode,null);
         $theDates->echoData();
         
         
         $theRates = new TheRates($total);
-        $theRates->cal_the_Rate($theDates,$rate);
+        $theRates->cal_theRates($theDates,$rate);
         $theRates->echoData();
         
         $theAmounts = new TheAmounts($total);
         
-        $theAmounts->calPeriodAmount( $theRates, $all_loan );
+        $theAmounts->cal_theAmounts( $theRates, $all_loan );
         $theAmounts->echoData();
         
     }

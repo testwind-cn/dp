@@ -78,7 +78,7 @@ class TheRates
         return $this->data_z_R_per;
     }
     
-    public function get_z_R($num)
+    private function get_z_R($num)
     { // 获取???
         if ($num < 0 || $num > $this->d3_total_Period + 1)
             return 1;
@@ -88,7 +88,7 @@ class TheRates
         return 1;
     }
     
-    public function set_z_R($num,$z1b)
+    private function set_z_R($num,$z1b)
     { // 获取???
         if ($num < 0 || $num > $this->d3_total_Period + 1)
             return;
@@ -99,7 +99,7 @@ class TheRates
     }
     
     
-    public function get_z_pai($num)
+    private function get_z_pai($num)
     { // 获取???
         if ($num < 0 || $num > $this->d3_total_Period + 1)
             return 1;
@@ -109,7 +109,7 @@ class TheRates
         return 1;
     }
     
-    public function set_z_pai($num,$mult_pai)
+    private function set_z_pai($num,$mult_pai)
     { // 获取???
         if ($num < 0 || $num > $this->d3_total_Period + 1)
             return 1;
@@ -124,7 +124,7 @@ class TheRates
     
     
     
-    public function getTotal()
+    public function getCount()
     { // ???
         return $this->d3_total_Period;
     }
@@ -155,7 +155,7 @@ class TheRates
     
     private function cal_PerRate($useSelfDay = false){ // 算月还,是按期,还是按天
         
-        $num = $this->getTotal();
+        $num = $this->getCount();
         
         $this->sum_z_pai = 0; // 从 2 到 第 25 个 z_pai 求和
         
@@ -213,16 +213,16 @@ class TheRates
         
     
     
-    public function cal_the_Rate($theDates,$rate) {
+    public function cal_theRates($theDates,$rate) {
         
         if ( (! ($theDates instanceof TheDates)) || (! isset($theDates)) ) {
             return;
         }
         
         $len = $theDates->getPeriod_Len();
-        $num = $theDates->getTotal();
+        $num = $theDates->getCount();
         if ( $num <=0 ) return;
-        if ( $this->getTotal() != $num  ) {
+        if ( $this->getCount() != $num  ) {
             $this->__destruct();
             $this->__construct($num);
         }

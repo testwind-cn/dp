@@ -52,7 +52,7 @@ class TheDates
         $this->data_due_days = null;
     }
    
-    public function getLastDate($num)
+    private function getLastDate($num)
     { // 获取上期还款日的一个副本
         if ($num < 0 || $num > $this->d3_total_Period + 1)
             return null;
@@ -64,7 +64,7 @@ class TheDates
     }
     
     
-    public function getThisDate($num)
+    private function getThisDate($num)
     { // 获取本期还款日的一个副本
         if ($num < 0 || $num > $this->d3_total_Period + 1)
             return null;
@@ -85,7 +85,7 @@ class TheDates
         return 0;
     }
     
-    public function getTotal()
+    public function getCount()
     { // ???
         return $this->d3_total_Period;
     }
@@ -97,7 +97,7 @@ class TheDates
     
     
     
-    public function getShiftSameDay( $start_date, $shift=0, $is_month=true) // shift 前后挪期， $is_month=false半月，true月
+    private function getShiftSameDay( $start_date, $shift=0, $is_month=true) // shift 前后挪期， $is_month=false半月，true月
     {
         
         // ?? 检查 $start_date 是合法日期 !!!!!
@@ -233,10 +233,10 @@ class TheDates
     }
     
     
-    public function calScheduleDate( $total_Period, $days_len=-1, $start_date=null, $spec_mday=0, $spec_mode=false,$days_array=null)
+    public function cal_theDates( $total_Period, $days_len=-1, $start_date=null, $spec_mday=0, $spec_mode=false,$days_array=null)
     {
         
-        $num = $this->getTotal();
+        $num = $this->getCount();
         if ( $total_Period <=0 ) return;
         if ( $total_Period != $num  ) {
             $this->__destruct();
@@ -303,7 +303,7 @@ class TheDates
 
     
     
-    public function setPeriodDate($start_date,$last_date, $x, $period_days=0, $period_days_array=null)
+    private function setPeriodDate($start_date,$last_date, $x, $period_days=0, $period_days_array=null)
     {
         
         if ( $x < 0 || $x > $this->d3_total_Period + 1) {
@@ -426,7 +426,7 @@ class TheDates
         return;
     }
     
-    public function fix29_30( $thedate, $num )
+    private function fix29_30( $thedate, $num )
     {
         $thedate = date_create_from_format("Y-m-d H:i:s",date_format($thedate,"Y-m-d 00:00:00"));
         $theday2 = getdate( $thedate->getTimestamp() );

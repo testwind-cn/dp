@@ -27,7 +27,7 @@ class TheAmounts
     
     
     
-    public function getTotal()
+    public function getCount()
     { // ???
         return $this->d3_total_Period;
     }
@@ -80,16 +80,16 @@ class TheAmounts
     
     
     
-    public function calPeriodAmount( $theRates, $all_loan )
+    public function cal_theAmounts( $theRates, $all_loan )
     {
         
         if ( (! ($theRates instanceof TheRates)) || (! isset($theRates)) ) {
             return;
         }
         
-        $num = $theRates->getTotal();
+        $num = $theRates->getCount();
         if ( $num <=0 ) return;
-        if ( $this->getTotal() != $num  ) {
+        if ( $this->getCount() != $num  ) {
             $this->__destruct();
             $this->__construct($num);
         }
@@ -135,7 +135,7 @@ class TheAmounts
     
     private function cal_last_period_due_principal()
     { // 修正最后一期应还本金，如果没还完本金，全部归还。
-        $num = $this->getTotal();
+        $num = $this->getCount();
         if ( $this->d_DueAmounts[$num] < $this->d_Amounts[$num] )
         {
             $this->d_DueAmounts[$num] = $this->d_Amounts[$num];

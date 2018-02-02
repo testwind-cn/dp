@@ -16,8 +16,8 @@ $aa2->cal_z_pai($aa1,0.059);
 $aa2->echoData();
 */
 
-$aa = new TotalS();
-$aa->aaa(90000,0.059,16,-1,"2018-1-29",0,true);
+$aa = new TheTotals();
+$aa->cal_theTotals(90000,0.059,16,-1,"2018-1-29",0,true);
 
 
 // $a->calPeriodAmount(90000,0.059,16,-1,"2018-1-29",0,true);
