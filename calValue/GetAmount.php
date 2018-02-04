@@ -45,9 +45,9 @@ class TheAmounts
         
         
         for ($i=0 ; $i<=$num+1;$i++){
-            $this->d_Amounts[$i] = 0.0;
-            $this->d_DueAmounts[$i] = 0.0;
-            $this->d_DueInterests[$i] = 0.0;
+            $this->d_Amounts[$i] = 0;
+            $this->d_DueAmounts[$i] = 0;
+            $this->d_DueInterests[$i] = 0;
             //            $this->data_z_ByDay[$i] = false;
         }
         
@@ -80,7 +80,7 @@ class TheAmounts
     
     
     
-    public function cal_theAmounts( $theRates, $all_loan )
+    public function cal_theAmounts( $theRates, $all_loan, $useDay)
     {
         
         if ( (! ($theRates instanceof TheRates)) || (! isset($theRates)) ) {
@@ -97,7 +97,7 @@ class TheAmounts
         
         if ( $all_loan < 0 ) { $all_loan = 0; }
         
-        $this->d1_all_loan = $all_loan;
+        $this->d1_all_loan =  intval( round( $all_loan * 100, 0, PHP_ROUND_HALF_UP ) );
 
         $this->d3_total_Period = $num; // 总期数不能小于1
         
@@ -107,17 +107,17 @@ class TheAmounts
         $this->d_DueAmounts[0] = 0;
         
         
-        $this->d6_period_amount = $theRates->cal_Period_Amount($all_loan);
-        $this->d6_period_amount_round = round( $this->d6_period_amount, 2, PHP_ROUND_HALF_UP ); // 求四舍五入到分月供
+        $this->d6_period_amount = $theRates->cal_Period_Amount($this->d1_all_loan);
+        $this->d6_period_amount_round = intval( round( $this->d6_period_amount, 0, PHP_ROUND_HALF_UP ) ); // 求四舍五入到分月供
 
         
         // $this->d6_period_amount_round = round( ceil($this->d6_period_amount *100) / 100, 2, PHP_ROUND_HALF_UP ); // 求向上取整到分月供
         
         
-        for ($x=1; $x <= $this->d3_total_Period; $x++) {
+        for ($x=1; $x <= $num; $x++) {
             $amt = $this->d_Amounts[$x-1]-$this->d_DueAmounts[$x-1];
             $this->d_Amounts[$x] =  $amt;
-            $this->d_DueInterests[$x] = $theRates->cal_Period_Interest($x, $amt,false );
+            $this->d_DueInterests[$x] = $theRates->cal_Period_Interest($x, $amt,$useDay );
             $this->d_DueAmounts[$x] = $this->d6_period_amount_round - $this->d_DueInterests[$x];
         }
         
@@ -128,7 +128,7 @@ class TheAmounts
         
         $x = $this->d3_total_Period;
         $amt = $this->d_Amounts[$x];
-        $this->d_DueInterests[$x] = $theRates->cal_Period_Interest($x, $amt,false );
+        $this->d_DueInterests[$x] = $theRates->cal_Period_Interest($x, $amt,true );
         
     }
     
@@ -136,7 +136,7 @@ class TheAmounts
     private function cal_last_period_due_principal()
     { // 修正最后一期应还本金，如果没还完本金，全部归还。
         $num = $this->getCount();
-        if ( $this->d_DueAmounts[$num] < $this->d_Amounts[$num] )
+        if ( $this->d_DueAmounts[$num] != $this->d_Amounts[$num] )
         {
             $this->d_DueAmounts[$num] = $this->d_Amounts[$num];
         }
@@ -156,10 +156,10 @@ class TheAmounts
                 
                 $echoStr = $echoStr."        <td>".$x."</td>\n";
                 //            $echoStr = $echoStr."        <td>".date_format($this->data_start_date,"Y-m-d")."</td>\n";
-                $echoStr = $echoStr."        <td>".$this->d_Amounts[$x]."</td>\n";
-                $echoStr = $echoStr."        <td>".$this->d_DueAmounts[$x]."</td>\n";
-                $echoStr = $echoStr."        <td>".$this->d_DueInterests[$x]."</td>\n";
-                $echoStr = $echoStr."        <td>".($this->d_DueAmounts[$x]+$this->d_DueInterests[$x])."</td>\n";
+                $echoStr = $echoStr."        <td>".($this->d_Amounts[$x]/100)."</td>\n";
+                $echoStr = $echoStr."        <td>".($this->d_DueAmounts[$x]/100)."</td>\n";
+                $echoStr = $echoStr."        <td>".($this->d_DueInterests[$x]/100)."</td>\n";
+                $echoStr = $echoStr."        <td>".(($this->d_DueAmounts[$x]+$this->d_DueInterests[$x])/100)."</td>\n";
                 
                 $echoStr = $echoStr."\n";
                 

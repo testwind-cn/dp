@@ -147,7 +147,7 @@ class TheDates
         
         $date=date_create_from_format("Y-m-d H:i:s", date_format( $start_date, "Y-m-d 00:00:00"));
         
-        if ( $days_len > 0 || $spec_mday == 0 ) { // 按日模式不修改，只改半月和月, 不指定日期的，也返回
+        if ( $days_len > 0 || $spec_mday <= 0 || $spec_mday > 28 ) { // 按日模式不修改，只改半月和月, 不指定日期的，也返回
             
             $m_fake_start = $date;
             return $m_fake_start;
@@ -161,11 +161,12 @@ class TheDates
         
         
         //////////////// 2.修正指定日期
+        /*
         if ( $spec_mday < 0 ) {
             $spec_mday = $m_day;
         }
         if ( $spec_mday > 28 ) $spec_mday = 28; // spec_mode 按实际传入的
-        
+        */
         
         if (  $days_len == 0 ) { ///半月模式
             if ( $spec_mday !=0 ) { //注意半月不指定日期模式！！！ 不是0任意天模式，
@@ -328,8 +329,8 @@ class TheDates
             date_add($this->data_period_date[$x], $per_Int);
             
             
-        } else { // 如果是0，则是按半月还，间隔为x个半月.
-            if ( $period_days <= 0 && $period_days >= - 24 ) // 如果是-1..-24，则是按月还，间隔为-period_days月.
+        } else { // 下面是月还，和半月还。如果是0，则是按半月还，间隔为x个半月.
+            if ( 0 >= $period_days && $period_days >= - 24 ) // 如果是-1..-24，则是按月还，间隔为-period_days月.
             {
                 $theday1 = getdate($start_date->getTimestamp());
                 
@@ -342,67 +343,56 @@ class TheDates
                     if ($x > 0) // 第2月开始平移到1号
                         date_add($this->data_period_date[$x], new DateInterval("P1D"));
                 }
-                ////////////// 1)
+                // //////////// 1)
                 
-                
-                
-                ////////////// 2) 加 x 或者 (x+1)/2 、 (x-1)/2 个月
+                    
+                // //////////// 2) 加 x 或者 (x+1)/2 、 (x-1)/2 个月
                 if ($period_days < 0)
                     $xd = $x * (- $period_days); // 月还, 从首月，增加 x * per 个月
-                    else { // 半月还, 从首月，增加 x /2 个月
-                        if ($x % 2 == 0) // 半月，双数
-                            $xd = $x / 2;
-                            if ($x % 2 == 1) // 半月，单数
-                            {
-                                if ($theday1['mday'] >= 16) // 半月，单数，16号以后的
-                                    $xd = ($x + 1) / 2;
-                                    else // 半月，单数，15号以前的
-                                        $xd = ($x - 1) / 2;
-                            }
+                else { // 半月还, 从首月，增加 x /2 个月
+                    if ($x % 2 == 0) // 半月，双数
+                        $xd = $x / 2;
+                    if ($x % 2 == 1) // 半月，单数
+                    {
+                        if ($theday1['mday'] >= 16) // 半月，单数，16号以后的
+                            $xd = ($x + 1) / 2;
+                        else // 半月，单数，15号以前的
+                            $xd = ($x - 1) / 2;
                     }
+                }
+                
+                $per_Int = new DateInterval("P" . $xd . "M");
+                date_add($this->data_period_date[$x], $per_Int);
+                ////////////// 2)
+                
+                $fixNum1 = $theday1['mday']; // 首期的开始日
+                // //////////// 3) 半月，单数，15号以前，增加15天
+                if ($period_days == 0 && ($x % 2 == 1) && ($theday1['mday'] <= 15)) { // 半月，单数，15号以前的，<=15号的，就加（x-1）/2个月，再加15天，再修正29,30
+                    date_add($this->data_period_date[$x], new DateInterval("P15D"));
+                    $fixNum1 = $fixNum1 + 15;
+                }
+                ////////////// 3)
+                
+                ////////////// 4) N月还；或者：半月，双数；或者：半月，单数，15号以前。修正 29,30号起始日的
+                //// 半月 单数  14,15需要修正
+                //// 半月 单数  29,30 不需要修正！！！！
+                if ($period_days < 0 || ($x % 2 == 0) || ($theday1['mday'] <= 15)) {
                     
-                    
-                    $per_Int = new DateInterval("P" . $xd . "M");
-                    date_add($this->data_period_date[$x], $per_Int);
-                    
-                    ////////////// 2)
-                    
-                    
-                    ////////////// 3) 半月，单数，15号以前，增加15天
-                    
-                    if ($period_days == 0 && ($x % 2==1) && ( $theday1['mday'] <= 15 ) )// 半月，单数，15号以前的，<=15号的，就加（x-1）/2个月，再加15天，再修正29,30
-                        date_add($this->data_period_date[$x],  new DateInterval("P15D"));
-                        ////////////// 3)
-                        
-                        
-                        ////////////// 4) N月还，或者：半月，双数，或者：半月，单数，15号以前，修正 29,30号起始日的
-                        //// 半月 单数  14,15需要修正
-                        $fixNum1 = $theday1['mday']; // 首期的开始日
-                        if ( $period_days < 0 ||($x % 2==0) || ( $fixNum1 <= 15 ) )
-                        {
-                            if (  $period_days == 0 && ($x % 2==1) && ( $fixNum1 == 14 || $fixNum1 == 15 ) )
-                            {
-                                // $theday2 = getdate( $this->data_period_date->getTimestamp() );
-                                $fixNum1 = $fixNum1 + 15;
-                            }
-                            if ($fixNum1 == 29 || $fixNum1 == 30)
-                            {
-                                $aa = $this->fix29_30($this->data_period_date[$x], $fixNum1 );
-                                $this->data_period_date[$x] = $aa;
-                                
-                            }
-                        }
-                        ////////////// 4)
-                        
-                        
-                        ////////////// 5) 半月，单数，>=16号的，就加（x+1）/2个月，再减15天，修正到day-15
-                        if ( $period_days == 0 && ( ($x % 2==1) && ( $theday1['mday'] >= 16 ) ) )
-                        {
-                            date_sub($this->data_period_date[$x],  new DateInterval("P15D"));
-                            $theday2 = getdate( $this->data_period_date[$x]->getTimestamp() );
-                            $this->data_period_date[$x] = date_create_from_format("Y-m-d H:i:s",$theday2['year']."-".$theday2['mon']."-".($theday1['mday']-15)." 00:00:00");
-                        }
-                        ////////////// 5)
+                    if ($fixNum1 == 29 || $fixNum1 == 30) {
+                        $aa = $this->fix29_30($this->data_period_date[$x], $fixNum1);
+                        $this->data_period_date[$x] = $aa;
+                    }
+                }
+                ////////////// 4)
+                
+                ////////////// 5) 半月，单数，>=16号的，就加（x+1）/2个月，再减15天，修正到day-15
+                if ( $period_days == 0 && ( ($x % 2==1) && ( $theday1['mday'] >= 16 ) ) )
+                {
+                    date_sub($this->data_period_date[$x],  new DateInterval("P15D"));
+                    $theday2 = getdate( $this->data_period_date[$x]->getTimestamp() );
+                    $this->data_period_date[$x] = date_create_from_format("Y-m-d H:i:s",$theday2['year']."-".$theday2['mon']."-".($theday1['mday']-15)." 00:00:00");
+                }
+                ////////////// 5)
                         
                         
             } elseif ($period_days < - 24) // 需要采用后面的实际天数数组
@@ -433,25 +423,50 @@ class TheDates
         
         // 1：  借款日29号的，按月加，如果结果日不等于29（就是1），就减一天
         if ( $num == 29 )
-        {
-            if ( $theday2['mday'] != 29 )
-                $thedate = date_sub( $thedate,new DateInterval("P1D"));
+        { // JAVA： 1月29日 + 一月 = 2月28日，不用处理；  PHP：1月29日 + 一月 = 3月1日，减一天；
+            
+            /* JAVA： 2017-1-29 + 一月 = 2017-2-28，不用处理；
+             * JAVA： 2016-1-29 + 一月 = 2016-2-29，不用处理；
+             * PHP：2017-1-29 + 一月 = 2017-3-1：减一天，成2017-2-28；
+             * PHP：2016-1-29 + 一月 = 2016-2-29，不用处理；
+             *
+             */
+            
+            if ( $theday2['mday'] != 29 && $theday2['mday'] != 28 )
+                date_sub( $thedate,new DateInterval("P1D"));
         }
         // 3：  借款日30号的，day=30时, 先按月加，如果结果日不等于30，回到1号，如果是上月是闰月29，再减一天到2月29
         if ( $num == 30 )
         {
-            if ( $theday2['mday'] != 30 )
-            {
-                // echo  date_format( date_create_from_format("Y-m-d", "2009-2-15"),"Y-m-d H:i:s" ); //会把当前时分秒带进去，
-                $thedate = date_create_from_format("Y-m-d H:i:s",$theday2['year']."-".$theday2['mon']."-"."1 00:00:00");
+            
+            /* JAVA： 2017-1-30 + 一月 = 2017-2-28，改成2017-3-1；
+             * JAVA： 2016-1-30 + 一月 = 2016-2-29，不用处理；
+             * PHP：2017-1-30 + 一月 = 2017-3-2，改成2017-3-1；
+             * PHP：2016-1-30 + 一月 = 2016-3-1，改成2017-3-1，再减一天，改成2016-2-29；
+             *
+             */
+            
+            if ( $theday2['mday'] < 5 )
+            { // PHP 的模式：只会是 3月日1,3月2日，等
                 
+                
+                // PHP：1月30日 + 一月 = 3月2日，调整到1日；
+                $thedate = date_create_from_format("Y-m-d H:i:s",$theday2['year']."-".$theday2['mon']."-"."1 00:00:00");
+                // echo  date_format( date_create_from_format("Y-m-d", "2009-2-15"),"Y-m-d H:i:s" ); //会把当前时分秒带进去，
+                
+                // PHP：1月30日 + 一月 = 3月2日，调整到1日，如果再减1日是2月29日，就用2月29日；
                 $temp_date = date_create_from_format("Y-m-d H:i:s",date_format($thedate,"Y-m-d 00:00:00"));
                 date_sub( $temp_date, new DateInterval("P1D"));
-                $theday3 = getdate( $temp_date->getTimestamp() );
                 
+                $theday3 = getdate( $temp_date->getTimestamp() );                
                 if ( $theday3['mday'] == 29 )
                     $thedate = $temp_date;
                     // 3：  借款日30号的，day=30时, 先按月加，如果结果日不等于30，回到1号，如果是上月是闰月29，再减一天到2月29
+            } else {
+                // JAVA 的模式
+                if ( $theday2['mday'] == 28 ) {
+                    date_add( $thedate,new DateInterval("P1D"));
+                }
             }
         }
         return $thedate;

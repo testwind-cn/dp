@@ -40,23 +40,23 @@ class TheTotals
     }
     
     
-    public function cal_theTotals($all_loan,$rate,$total,$len, $sdate, $fixD,$mode){
+    public function cal_theTotals($all_loan,$rate,$total,$len, $sdate, $spec_mday,$spec_mode,$useDay){ // useDay 一般默认false，表示按期
 
         
 //        $a->calPeriodAmount(90000,0.059,16,-1,"2018-1-29",0,true);
         
         $theDates = new TheDates($total);
-        $theDates->cal_theDates( $total, $len, $sdate , $fixD , $mode,null);
+        $theDates->cal_theDates( $total, $len, $sdate , $spec_mday , $spec_mode,null);
         $theDates->echoData();
         
         
         $theRates = new TheRates($total);
-        $theRates->cal_theRates($theDates,$rate);
+        $theRates->cal_theRates($theDates,$rate,$useDay);
         $theRates->echoData();
         
         $theAmounts = new TheAmounts($total);
         
-        $theAmounts->cal_theAmounts( $theRates, $all_loan );
+        $theAmounts->cal_theAmounts( $theRates, $all_loan, $useDay );
         $theAmounts->echoData();
         
     }

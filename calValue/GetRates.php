@@ -81,11 +81,11 @@ class TheRates
     private function get_z_R($num)
     { // 获取???
         if ($num < 0 || $num > $this->d3_total_Period + 1)
-            return 1;
+            return 0;
         if (is_array($this->data_z_R) && isset($this->data_z_R[$num])) {
             return $this->data_z_R[$num];
         }
-        return 1;
+        return 0;
     }
     
     private function set_z_R($num,$z1b)
@@ -109,13 +109,17 @@ class TheRates
         return 1;
     }
     
-    private function set_z_pai($num,$mult_pai)
+    private function set_z_pai($num,$mult_pai, $useSelfDay)  // = false))
     { // 获取???
         if ($num < 0 || $num > $this->d3_total_Period + 1)
             return 1;
-        if (is_array($this->data_z_R) && isset($this->data_z_R[$num])) {
-            $r = $this->data_z_R[$num];
+            
+        if ( $useSelfDay ) {
+            $r = $this->get_z_R($num);
+        } else {
+            $r = $this->get_z_R_per();
         }
+        
         if (is_array($this->data_z_pai) && isset($this->data_z_pai[$num])) {
             $this->data_z_pai[$num] = ( $r  + 1 ) * $mult_pai;
         }
@@ -165,14 +169,14 @@ class TheRates
             for ($x=$num; $x >= 1; $x--)
             {
                 $mult_pai = $this->get_z_pai( $x+1 );
-                $this->set_z_pai( $x,$mult_pai );
+                $this->set_z_pai( $x,$mult_pai,$useSelfDay  );
                 $this->sum_z_pai = $this->sum_z_pai + $mult_pai; // 从 2 到 第 25 个 z_pai 求和
             }
             
             $this->first_z_pai = $this->get_z_pai(1); //  第1 个 z_pai
             
         } else {
-            
+            /*
             $mult_pai = 1;
             for ($x=$num; $x >= 1; $x--)
             {
@@ -181,6 +185,16 @@ class TheRates
             }
             
             $this->first_z_pai = $mult_pai; //  第1 个 z_pai
+            */
+
+            for ($x=$num; $x >= 1; $x--)
+            {
+                $mult_pai = $this->get_z_pai( $x+1 );
+                $this->set_z_pai( $x,$mult_pai,$useSelfDay );
+                $this->sum_z_pai = $this->sum_z_pai + $mult_pai; // 从 2 到 第 25 个 z_pai 求和
+            }
+            
+            $this->first_z_pai = $this->get_z_pai(1); //  第1 个 z_pai
             
         }
         
@@ -193,27 +207,26 @@ class TheRates
         return $amt;
     }
     
-    public function cal_Period_Interest($num, $total_amt, $per_amt,$useSelfDay = false){ // 算月还,是按期,还是按天
+    public function cal_Period_Interest($num, $total_amt, $useSelfDay = false){ // 算月还,是按期,还是按天
         if ($num < 1 || $num > $this->d3_total_Period )
             return 0;
         
         if ( $useSelfDay ) { // 按天
-            $intv = $total_amt * $this->get_z_R($num);
-            $intv = round( $intv, 2, PHP_ROUND_HALF_UP ); // 求四舍五入到分月供
+            $intD = $total_amt * $this->get_z_R($num);
         } else {
-            $intv = $total_amt * $this->get_z_R_per(  );
-            $intv = round( $intv, 2, PHP_ROUND_HALF_UP ); // 求四舍五入到分月供            
+            $intD = $total_amt * $this->get_z_R_per(  );
         }
         
         //$amt = round( $amt, 2, PHP_ROUND_HALF_UP ); // 求四舍五入到分月供
         // $this->d6_period_amount_round = round( ceil($this->d6_period_amount *100) / 100, 2, PHP_ROUND_HALF_UP ); // 求向上取整到分月供
-        return $intv;
+        $intL = intval( round( $intD, 0, PHP_ROUND_HALF_UP ) ); // 求四舍五入到分月供
+        return $intL;
     }
     
         
     
     
-    public function cal_theRates($theDates,$rate) {
+    public function cal_theRates($theDates,$rate,$useDay) {
         
         if ( (! ($theDates instanceof TheDates)) || (! isset($theDates)) ) {
             return;
@@ -232,13 +245,13 @@ class TheRates
         
         for ($x=1; $x <= $num; $x++)
         {
-            $days = $theDates->getDueDays($num);
+            $days = $theDates->getDueDays( $x );
             
-            $this->fix_z_R( $x, $real_day_rate,$days, $len,false ); // $this->d2_real_day_rate, false 按期，true 按天
+            $this->fix_z_R( $x, $real_day_rate,$days, $len,$useDay ); // $this->d2_real_day_rate, false 按期，true 按天
         }
         
         $this->set_z_R_per( $real_day_rate, $len );
-        $this->cal_PerRate(false);
+        $this->cal_PerRate($useDay);
         
         
         
