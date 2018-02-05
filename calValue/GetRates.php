@@ -14,9 +14,9 @@ class TheRates
     private $sum_z_pai=0;
     
 
-    private $data_z_R;                            // 本期本息率 = 1 + 年率 /360* 本期天数
-    private $data_z_pai;                            // <本息率>连乘积
-    private $data_z_R_per;  //期利率
+    private $data_z_R;                            // 当前期的息率 = 年率 /360* 本期天数
+    private $data_z_pai;                            // <1+当前期的息率>连乘积
+    private $data_z_R_per;                          //按整期的利率
 //    private $data_z_ByDay;                            // 实际是按天算利息
     
     
