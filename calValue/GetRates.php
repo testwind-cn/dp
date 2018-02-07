@@ -30,16 +30,22 @@ class TheRates
         
         $this->data_z_R_day = array();
         $this->data_z_PI_day = array();
+        $this->data_z_PI_per = array();
         
         $this->d3_total_Period = $num;
         
         $this->first_z_PI_day=1;
         $this->sum_z_PI_day=0;
+        $this->first_z_PI_per=1;
+        $this->sum_z_PI_per=0;
+        
+        
         $this->data_z_R_per = 0;
         
         for ($i=0 ; $i<=$this->d3_total_Period+1;$i++){
             $this->data_z_R_day[$i] = 0;
             $this->data_z_PI_day[$i] = 1;
+            $this->data_z_PI_per[$i] = 1;
 //            $this->data_z_ByDay[$i] = false;
         }
         
@@ -55,11 +61,14 @@ class TheRates
                 unset($this->data_z_R_day[$i]);
             if (is_array($this->data_z_PI_day) && isset($this->data_z_PI_day[$i]))
                 unset($this->data_z_PI_day[$i]);
+            if (is_array($this->data_z_PI_per) && isset($this->data_z_PI_per[$i]))
+                unset($this->data_z_PI_per[$i]);
 //            if (is_array($this->data_z_ByDay) && isset($this->data_z_ByDay[$i]))
 //                unset($this->data_z_ByDay[$i]);
         }
         $this->data_z_R_day = null;
         $this->data_z_PI_day = null;
+        $this->data_z_PI_per = null;
 //        $this->data_z_ByDay = null;
     }
     
@@ -73,8 +82,11 @@ class TheRates
         if ($len == 0) {
             $this->data_z_R_per = 15 * $real_day_rate;
         }
-        if ($len < 0) {
+        if ($len < 0 && $len > -25 ) {
             $this->data_z_R_per = 30 * (- $len) * $real_day_rate;
+        }
+        if ($len <= -25 ) {
+            $this->data_z_R_per = 0;
         }
     }
     
@@ -184,15 +196,12 @@ class TheRates
         }        
     }
     
-    private function cal_PerRate(){ // 算月还,是按期,还是按天
+    private function cal_Rate_PI(){ // 算月还,是按期,还是按天
         
         $num = $this->getCount();
         
+        
         $this->sum_z_PI_day = 0; // 从 2 到 第 25 个 z_pai 求和
-        $this->sum_z_PI_per = 0;
-        
-        
-        
         for ($x = $num; $x >= 1; $x --) {
             $mult_pai = $this->get_z_PI_day($x + 1);
             $this->set_z_PI_day($x, $mult_pai);
@@ -211,7 +220,7 @@ class TheRates
             
             $this->first_z_pai = $mult_pai; //  第1 个 z_pai
             */
-
+        $this->sum_z_PI_per = 0;
         for ($x = $num; $x >= 1; $x --) {
             $mult_pai = $this->get_z_PI_per($x + 1);
             $this->set_z_PI_per($x, $mult_pai);
@@ -224,7 +233,7 @@ class TheRates
         
     }
     
-    public function cal_Period_Amount($total,$useSelfDay = false) {
+    public function cal_Average_Amount($total,$useSelfDay) {
         if ( $useSelfDay ) {
             $amt = $total * $this->first_z_PI_day / $this->sum_z_PI_day; // 求精确月供
         } else {
@@ -275,11 +284,12 @@ class TheRates
         {
             $days = $theDates->getDueDays( $x );
             
-            $this->fix_z_R( $x, $real_day_rate,$days, $len,$useDay ); // $this->d2_real_day_rate, false 按期，true 按天
+//            $this->fix_z_R( $x, $real_day_rate,$days, $len,$useDay ); // $this->d2_real_day_rate, false 按期，true 按天
+            $this->set_z_R_day($x, $days * $real_day_rate); // real_rate / 360.0;
         }
         
         $this->set_z_R_per( $real_day_rate, $len );
-        $this->cal_PerRate();
+        $this->cal_Rate_PI();
         
         
         

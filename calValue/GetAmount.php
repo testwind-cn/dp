@@ -17,12 +17,12 @@ class TheAmounts
     private $d3_total_Period = 6;
     
     
-    private $d6_period_amount = 0.0;
-    private $d6_period_amount_round = 0;
+    private $d6_Average_Amount = 0.0;
+    private $d6_Average_Amountmount_round = 0;
     
-    private $d_Amounts = array();
-    private $d_DueAmounts = array();
-    private $d_DueInterests = array();
+    private $d_Principal = array();
+    private $d_DuePrincipal = array();
+    private $d_DueInterest = array();
     
     
     
@@ -37,17 +37,17 @@ class TheAmounts
     {
         //        $this->data_start_date = date_create();
         
-        $this->d_Amounts = array();
-        $this->d_DueAmounts = array();
-        $this->d_DueInterests = array();
+        $this->d_Principal = array();
+        $this->d_DuePrincipal = array();
+        $this->d_DueInterest = array();
         
         $this->d3_total_Period = $num;
         
         
         for ($i=0 ; $i<=$num+1;$i++){
-            $this->d_Amounts[$i] = 0;
-            $this->d_DueAmounts[$i] = 0;
-            $this->d_DueInterests[$i] = 0;
+            $this->d_Principal[$i] = 0;
+            $this->d_DuePrincipal[$i] = 0;
+            $this->d_DueInterest[$i] = 0;
             //            $this->data_z_ByDay[$i] = false;
         }
         
@@ -60,18 +60,18 @@ class TheAmounts
         echo 'Destroying: ';
         // , $this->name, PHP_EOL;
         for ($i = $this->d3_total_Period + 1; $i >= 0; $i --) {
-            if (is_array($this->d_Amounts) && isset($this->d_Amounts[$i]))
-                unset($this->d_Amounts[$i]);
-            if (is_array($this->d_DueAmounts) && isset($this->d_DueAmounts[$i]))
-                unset($this->d_DueAmounts[$i]);
-            if (is_array($this->d_DueInterests) && isset($this->d_DueInterests[$i]))
-                unset($this->d_DueInterests[$i]);
+            if (is_array($this->d_Principal) && isset($this->d_Principal[$i]))
+                unset($this->d_Principal[$i]);
+            if (is_array($this->d_DuePrincipal) && isset($this->d_DuePrincipal[$i]))
+                unset($this->d_DuePrincipal[$i]);
+            if (is_array($this->d_DueInterest) && isset($this->d_DueInterest[$i]))
+                unset($this->d_DueInterest[$i]);
             // if (is_array($this->data_z_ByDay) && isset($this->data_z_ByDay[$i]))
             // unset($this->data_z_ByDay[$i]);
         }
-        $this->d_Amounts = null;
-        $this->d_DueAmounts = null;
-        $this->d_DueInterests = null;
+        $this->d_Principal = null;
+        $this->d_DuePrincipal = null;
+        $this->d_DueInterest = null;
         // $this->data_z_ByDay = null;
     }
     
@@ -103,32 +103,32 @@ class TheAmounts
         
         
 
-        $this->d_Amounts[0] = $this->d1_all_loan;
-        $this->d_DueAmounts[0] = 0;
+        $this->d_Principal[0] = $this->d1_all_loan;
+        $this->d_DuePrincipal[0] = 0;
         
         
-        $this->d6_period_amount = $theRates->cal_Period_Amount($this->d1_all_loan);
-        $this->d6_period_amount_round = intval( round( $this->d6_period_amount, 0, PHP_ROUND_HALF_UP ) ); // 求四舍五入到分月供
+        $this->d6_Average_Amount = $theRates->cal_Average_Amount($this->d1_all_loan,$useDay);
+        $this->d6_Average_Amountmount_round = intval( round( $this->d6_Average_Amount, 0, PHP_ROUND_HALF_UP ) ); // 求四舍五入到分月供
 
         
         // $this->d6_period_amount_round = round( ceil($this->d6_period_amount *100) / 100, 2, PHP_ROUND_HALF_UP ); // 求向上取整到分月供
         
         
         for ($x=1; $x <= $num; $x++) {
-            $amt = $this->d_Amounts[$x-1]-$this->d_DueAmounts[$x-1];
-            $this->d_Amounts[$x] =  $amt;
-            $this->d_DueInterests[$x] = $theRates->cal_Period_Interest($x, $amt,$useDay );
-            $this->d_DueAmounts[$x] = $this->d6_period_amount_round - $this->d_DueInterests[$x];
+            $amt = $this->d_Principal[$x-1]-$this->d_DuePrincipal[$x-1];
+            $this->d_Principal[$x] =  $amt;
+            $this->d_DueInterest[$x] = $theRates->cal_Period_Interest($x, $amt,$useDay );
+            $this->d_DuePrincipal[$x] = $this->d6_Average_Amountmount_round - $this->d_DueInterest[$x];
         }
         
         $this->cal_last_period_due_principal();
         
-        $amt = $this->d_Amounts[1];
-        $this->d_DueInterests[1] = $theRates->cal_Period_Interest(1, $amt,true );
+        $amt = $this->d_Principal[1];
+        $this->d_DueInterest[1] = $theRates->cal_Period_Interest(1, $amt,true );
         
         $x = $this->d3_total_Period;
-        $amt = $this->d_Amounts[$x];
-        $this->d_DueInterests[$x] = $theRates->cal_Period_Interest($x, $amt,true );
+        $amt = $this->d_Principal[$x];
+        $this->d_DueInterest[$x] = $theRates->cal_Period_Interest($x, $amt,true );
         
     }
     
@@ -136,9 +136,9 @@ class TheAmounts
     private function cal_last_period_due_principal()
     { // 修正最后一期应还本金，如果没还完本金，全部归还。
         $num = $this->getCount();
-        if ( $this->d_DueAmounts[$num] != $this->d_Amounts[$num] )
+        if ( $this->d_DuePrincipal[$num] != $this->d_Principal[$num] )
         {
-            $this->d_DueAmounts[$num] = $this->d_Amounts[$num];
+            $this->d_DuePrincipal[$num] = $this->d_Principal[$num];
         }
     //    $this->data_due_amount = $this->data_due_principal + $this->data_due_interest;
     }
@@ -156,10 +156,10 @@ class TheAmounts
                 
                 $echoStr = $echoStr."        <td>".$x."</td>\n";
                 //            $echoStr = $echoStr."        <td>".date_format($this->data_start_date,"Y-m-d")."</td>\n";
-                $echoStr = $echoStr."        <td>".($this->d_Amounts[$x]/100)."</td>\n";
-                $echoStr = $echoStr."        <td>".($this->d_DueAmounts[$x]/100)."</td>\n";
-                $echoStr = $echoStr."        <td>".($this->d_DueInterests[$x]/100)."</td>\n";
-                $echoStr = $echoStr."        <td>".(($this->d_DueAmounts[$x]+$this->d_DueInterests[$x])/100)."</td>\n";
+                $echoStr = $echoStr."        <td>".($this->d_Principal[$x]/100)."</td>\n";
+                $echoStr = $echoStr."        <td>".($this->d_DuePrincipal[$x]/100)."</td>\n";
+                $echoStr = $echoStr."        <td>".($this->d_DueInterest[$x]/100)."</td>\n";
+                $echoStr = $echoStr."        <td>".(($this->d_DuePrincipal[$x]+$this->d_DueInterest[$x])/100)."</td>\n";
                 
                 $echoStr = $echoStr."\n";
                 
