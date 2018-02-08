@@ -153,7 +153,7 @@ class TheRates
     }
     
     
-    private function get_z_PI_oer($num)
+    private function get_z_PI_per($num)
     { // 获取???
         if ($num < 0 || $num > $this->d3_total_Period + 1)
             return 1;
@@ -233,7 +233,7 @@ class TheRates
         
     }
     
-    public function cal_Average_Amount($total,$useSelfDay) {
+    public function cal_Average_Payment($total,$useSelfDay) {
         if ( $useSelfDay ) {
             $amt = $total * $this->first_z_PI_day / $this->sum_z_PI_day; // 求精确月供
         } else {
