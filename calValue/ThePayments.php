@@ -129,7 +129,7 @@ class ThePayments
     }
     
     public function setAllPrincipal( $Principal) {
-        $this->d1_all_loan = $Principal;
+        $this->d1_all_loan = intval( round( $Principal, 0, ThePayments::mode_PHP_ROUND_HALF_UP ) );
         //				( long ) com.wj.fin.wjutil.TheTools.round_half_up( all_loan*100, 0 );
     }
     
