@@ -233,17 +233,12 @@ class TheRates
         
     }
     
-<<<<<<< HEAD:calValue/TheRates.php
-    public function cal_Average_Payment($total) {
-        $amt = $total * $this->first_z_pai / $this->sum_z_pai; // 求精确月供
-=======
     public function cal_Average_Amount($total,$useSelfDay) {
         if ( $useSelfDay ) {
             $amt = $total * $this->first_z_PI_day / $this->sum_z_PI_day; // 求精确月供
         } else {
             $amt = $total * $this->first_z_PI_per / $this->sum_z_PI_per; // 求精确月供
         }
->>>>>>> 3742152a086704ae57a85354b089e045e4e49ecd:calValue/GetRates.php
         //$amt = round( $amt, 2, PHP_ROUND_HALF_UP ); // 求四舍五入到分月供
         // $this->d6_period_amount_round = round( ceil($this->d6_period_amount *100) / 100, 2, PHP_ROUND_HALF_UP ); // 求向上取整到分月供
         return $amt;
