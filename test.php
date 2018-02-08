@@ -5,7 +5,7 @@ echo $url."   ";
 //echo "$_SERVER[REQUEST_URL]";
 
 //require_once 'calValue/GetRates.php';
-require_once 'calValue/GetTotal.php';
+require_once 'calValue/TheTotal.php';
 
 /*
 $aa1 = new TheDates(12);
@@ -16,8 +16,8 @@ $aa2->cal_z_pai($aa1,0.059);
 $aa2->echoData();
 */
 
-$aa = new TheTotals();
-$aa->cal_theTotals(90000.5623,0.059,16,-1,"2018-1-29",0,true);
+$aa = new TheTotal();
+$aa->cal_theTotals(90000.5623,0.059,16,-1,"2018-1-29",0,true,false);
 
 
 // $a->calPeriodAmount(90000,0.059,16,-1,"2018-1-29",0,true);

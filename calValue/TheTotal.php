@@ -1,11 +1,12 @@
 <?php
 
-require_once 'calValue/GetRates.php';
-require_once 'calValue/GetDates.php';
-require_once 'calValue/GetAmount.php';
+require_once 'calValue/TheRates.php';
+require_once 'calValue/TheDates.php';
+require_once 'calValue/ThePayments.php';
+require_once 'calValue/TheMethod.php';
 
 
-class TheTotals
+class TheTotal
 {
     // 1-1098按设置固定天（ 多期、一期），
     // 0按半月，-1按月，-2双月，-3三月，-4四月，-5五月，-6六月、-7七月、-8八月、-9九月、-10十月、-11十月、-12一年、（ 多期、一期）
@@ -54,10 +55,14 @@ class TheTotals
         $theRates->cal_theRates($theDates,$rate,$useDay);
         $theRates->echoData();
         
-        $theAmounts = new TheAmounts($total);
+        $thePayments = new ThePayments($total);
+        $thePayments->setAllPrincipal($all_loan*100);
         
-        $theAmounts->cal_theAmounts( $theRates, $all_loan, $useDay );
-        $theAmounts->echoData();
+        $theMtd = new TheMethod();
+        $theMtd->cal_Payments($theRates, $thePayments, $useDay);
+        
+//        $theAmounts->cal_theAmounts( $theRates, $all_loan, $useDay );
+        $thePayments->echoData();
         
     }
     

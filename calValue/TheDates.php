@@ -13,6 +13,8 @@ class TheDates
     private $data_period_date;// = date_create();       // 贷款本期还款日期
     private $data_due_days;                         // 本期借款天数
     private $period_days_array=null;
+    
+    private $data_is_HeadRear_Period = false; // 这是通过日期比对,看实际头尾是否是正月,是就 true, 不是就 false
 
     
     
@@ -95,6 +97,9 @@ class TheDates
         return $this->d4_period_len;
     }
     
+    public function is_HeadRear_Period() {
+        return $this->data_is_HeadRear_Period;
+    }
     
     
     private function getShiftSameDay( $start_date, $shift=0, $is_month=true) // shift 前后挪期， $is_month=false半月，true月

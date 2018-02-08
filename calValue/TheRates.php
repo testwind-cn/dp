@@ -1,7 +1,7 @@
 <?php
 
 
-require_once 'GetDates.php';
+require_once 'TheDates.php';
 
 
 class TheRates
@@ -200,7 +200,7 @@ class TheRates
         
     }
     
-    public function cal_Period_Amount($total) {
+    public function cal_Average_Payment($total) {
         $amt = $total * $this->first_z_pai / $this->sum_z_pai; // 求精确月供
         //$amt = round( $amt, 2, PHP_ROUND_HALF_UP ); // 求四舍五入到分月供
         // $this->d6_period_amount_round = round( ceil($this->d6_period_amount *100) / 100, 2, PHP_ROUND_HALF_UP ); // 求向上取整到分月供
