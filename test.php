@@ -22,15 +22,15 @@ $aa->cal_theTotals(90000.5623,0.059,16,-1,"2018-1-29",0,true,false);
 
 // $a->calPeriodAmount(90000,0.059,16,-1,"2018-1-29",0,true);
 
+
+/*
 require_once 'calValue/TotalScedule.php';
-
 $a = new TotalScedule();
-
 //$a->calPeriodDate(50,-1,"2018-7-31",null);
 $a->calPeriodAmount(90000,0.059,16,-1,"2018-1-29",0,true,false);
-
-
 echo $a->echoTable(true);
+*/
+
 
 /*
 $x = 1;
