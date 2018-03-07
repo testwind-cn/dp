@@ -22,7 +22,7 @@ class TheTotal
     private $d6_period_amount = 0.0;
     private $d6_period_amount_round = 0;
     private $period_days_array=null;
-    private $periodAmounts = array();
+//    private $periodAmounts = array();
     
     
     
